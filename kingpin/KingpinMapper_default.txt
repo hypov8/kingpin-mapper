@@ -1,0 +1,166 @@
+// KingpinMapper configuration by hypov8
+//
+// make sure this file exists in the same folder as KingpinMapper.exe
+// KingpinMapper.exe can be located in any folder
+//
+// version 1
+// this configuration file is for default kingpin mapping tools (kpbsp.exe, kpvis.exe, kprad.exe)
+// including ACC's image2wal.exe tool for pre-build event (fix map missing colored lighting)
+// it can be adapted to run on many other command line compilers/utilities
+//
+// the below settings will be used when GUI is set to 'default' compile
+// 'custom' will be generated based of these but stored in a seperate file. thus allowing 2 'profiles'
+//
+//
+//==============================
+// newcolum (start a new colum)
+// switch_APPENDMAP, (append map name to end. not all programs suport this, some use a switch instead) (requires 1 comma)
+// switch_CHECK_BOX, <display name>, <compile switch>, <checked(0/1)>, <tooltip>, <tip n..>
+// switch_TEXT_BOX_, <display name>, <compile switch>, <checked(0/1)>, <default text>, <tooltip>, <tip n..>
+//
+//==============================
+// for options below use eg..
+// switch_PATH_EXE_, <display name>, <compile switch>, <checked(0/1)>, <default text>, <pathname(0/1/2)>, <tooltip>, <tip n..>
+// Note: <pathname(0/1/2)> 0=folder, 1=folder/filename, 2=folder/text
+//================================
+// switch_PATH_EXE_ //insert kingpin.exe folder/file after switch
+// switch_PATH_BASE //insert /main folder after switch      	//note: <pathname(1)> dont work
+// switch_PATH_MOD_ //insert /mod folder  after switch       	//note: <pathname(1)> dont work
+// switch_PATH_PRE_ //insert img2wal.exe folder/file after switch
+// switch_PATH_BSP_ //insert kpbsp.exe folder/file after switch
+// switch_PATH_VIS_ //insert kpvis.exe folder/file after switch
+// switch_PATH_RAD_ //insert kprad.exe folder/file after switch
+// switch_PATH_MAP_ //insert full .map folder+file name			//note: only <pathname(1)> works.
+// 
+// switch_PATH_TEXT //todo: 
+// todo: use bsp
+//================================
+
+// pre-build tool.
+// generate .wal
+// can be used for other tools like re'name to lower-case, mapfix etc..
+PRE
+{
+	switch_CHECK_BOX,-NoCheck (size),-NoCheck,1,Do not check texture dimensions.,By default images whose dimensions are not a power of two above or equal to 16 are skipped.
+	switch_CHECK_BOX,-Replace (exist),-Replace,0,Always replace existing files without warning.,By default the program will prompt the user.
+	switch_CHECK_BOX,-SKip (exist),-SKip,1,Skip if .wal file exsist.,By default the program will prompt the user. Note: -SKip has the priority over -Replace.
+	switch_CHECK_BOX,-SubFolders,-SubFolders,0,Look in all sub folders for images.,By default only the working directory or the specified directory will be parsed.,Note: Use without bsp source.
+	switch_CHECK_BOX,-Set16 (palet),-Set16,0,Speed up conversion.,Use 16-bit color conversion table(instead of 24-bit).,Effects quality.,Parameter ignored when loading a look up table.
+	switch_TEXT_BOX_,-SetAlpha,-SetAlpha,0,125,Alpha threashold,Value 0 to 256,By defaultthe alpha channel is (ignored).
+	switch_PATH_BASE,-Folder (base),-Folder,1,textures,2,ONLY USE 1 -Folder switch,,Location of source images.,By default only files located in the working directory will be converted.,Path saved in .WAL file,Path is limited to 31 char.
+	//switch_PATH_MOD_,-Folder (mod),-Folder,0,textures,2,ONLY USE 1 -Folder switch,,Location of source images.,By default only files located in the working directory will be converted.,Path saved in .WAL file,Path is limited to 31 char.
+	switch_PATH_PRE_,-Palette,-Palette,1,KINGPIN.act,2,Required.,Palette file for the conversion.,Palette is a .ACT file
+	switch_PATH_PRE_,-LookUp (table),-LookUp,0,24TO8.DAT,2,Speeds up conversion,optional 24-bit/16-bit conversion table.,If none exists it will be created,(24-bit needs 16 MB of free space).
+	switch_PATH_MAP_,-Source (.bsp),-Source,1,,1,Use .bsp file for texture list.,-Folder needs to be set (eg: "c:/kingpin/main/textures/").,-SubFolders parameter is ignored.
+}
+
+BSP
+{
+	switch_APPENDMAP,
+	switch_CHECK_BOX,-drawflag,-draw,0,Draw flags
+	switch_CHECK_BOX,-fulldetail,-fulldetail,0,full detail,All detail brushes will be compiled as strucual
+	switch_CHECK_BOX,-glview,-glview,0,Generate a .gl view file
+	switch_CHECK_BOX,-leaktest,-leaktest,0,Only check map for leaks
+	switch_CHECK_BOX,-onlyents,-onlyents,0,Only update entities in bsp
+	switch_CHECK_BOX,-nocsg,-nocsg,0,don't carve intersecting brushes 
+	switch_CHECK_BOX,-nodetail,-nodetail,0,don't use detail brushes
+	switch_CHECK_BOX,-nofill,-nofill,0,?
+	switch_CHECK_BOX,-nomerge,-nomerge,0,do not merge faces that share the same edge on the same plane
+	switch_CHECK_BOX,-noopt,-noopt,0,Disables optimisation
+	newcolum	
+	switch_CHECK_BOX,-noprune,-noprune,0,don't prune nodes
+	switch_CHECK_BOX,-noshare,-noshare,0,don't share bsp edges
+	switch_CHECK_BOX,-nosubdiv,-nosubdiv,0,don't subdivide bsp node faces
+	switch_CHECK_BOX,-notjunc,-notjunc,0,don't create tjunctions (edge melting)
+	switch_CHECK_BOX,-nowater,-nowater,0,disables water brushes
+	switch_CHECK_BOX,-noweld,-noweld,0,use unique face vertexes
+	switch_CHECK_BOX,-tempout,-tmpout,0,?
+	switch_CHECK_BOX,-verbose,-v,0,Display extra compile info
+	switch_CHECK_BOX,-verboseentities,-verboseentities,0,enable entity verbose mode
+	switch_TEXT_BOX_,-block,-block,0,0 0,Requires 2 values,value1= xl+xh,value2= yl+yh,range= -4 to +3,1 block= 1024 grid units,compile only 1 section of map(block) 
+	switch_TEXT_BOX_,-blocks,-blocks,0,-2 -2 1 1,Requires 4 values,value1= xl,value2= yl,value3= xh,value4= yh,range= -4 to +3,1 block= 1024 grid units,compile a section of map(blocks)
+	switch_TEXT_BOX_,-microvolume,-micro,0,1.0,micro <volume>,sets the micro volume to the given float		
+	switch_TEXT_BOX_,-subdiv size,-chop,0,400,surface subdivide size.,helps r'speeds but size is limited in kingpin.
+	switch_TEXT_BOX_,-CPU threads,-threads,0,4,limit number of CPU threads so other programs can function
+}
+
+VIS
+{
+	switch_APPENDMAP,
+	switch_CHECK_BOX,-fastvis,-fast,0,Speed up compile for testing,DO NOT use for release maps
+	switch_CHECK_BOX,-nosort,-nosort,0,?
+	switch_CHECK_BOX,-tmp,-tmpin,0,?
+	switch_CHECK_BOX,-verbose,-v,0,Display extra compile info
+	switch_TEXT_BOX_,-testlevel,-level,0,0,?
+	switch_TEXT_BOX_,-CPU threads,-threads,0,4,limit number of CPU threads so other programs can function	
+}
+
+LIGHT
+{
+	switch_APPENDMAP,
+	switch_CHECK_BOX,-dump,-dump,0,patch info dump
+	switch_CHECK_BOX,-extra,-extra,1,extra quality light sampling
+	switch_CHECK_BOX,-glview,-glview,0,?
+	switch_CHECK_BOX,-nobmodlight,-nobmodlight,0,brush model lighting disabled
+	switch_CHECK_BOX,-nocoloru,-nocoloru,0,lighting converted to greyscale.,unweighted
+	switch_CHECK_BOX,-nocolor,-nocolor,0,lighting converted to greyscale.,RGB weighted
+	switch_CHECK_BOX,-nocurve,-nocurve,0,phong shading disabled)
+	switch_CHECK_BOX,-nominlimit,-nominlimit,1,antilights go darker than minlight
+	switch_CHECK_BOX,-nopvs,-nopvs,0,stop pvs checking
+	switch_CHECK_BOX,-nosplotchfix,-nosplotchfix,0,anti-splotch fix.,disabled for plain face lights
+	switch_CHECK_BOX,-nostopbleed,-nostopbleed,0,disabled bleeding light correction 
+	switch_CHECK_BOX,-onlybounce,-onlybounce,0,only bounced light saved,usefull for debuging bounced light
+	switch_CHECK_BOX,-verbose,-v,0,more detailed output
+	newcolum	
+	switch_TEXT_BOX_,-bounce,-bounce,1,4,set to %d,radiosity bounces
+	switch_TEXT_BOX_,-chop,-chop,0,128,set to %.1f,surface patch size
+	switch_TEXT_BOX_,-chopcurve,-chopcurve,0,64,value 16-256,default 32,curve surface patch size
+	switch_TEXT_BOX_,-choplight,-choplight,0,64,value 16-256,default 64,light-emitting surfacepatch size
+	switch_TEXT_BOX_,-chopsky,-chopsky,0,128,value 16-256,default 64,sky patch size
+	switch_TEXT_BOX_,-chopwarp,-chopwarp,0,128,value 16-256,default 64,warping patch size
+	switch_PATH_BASE,-gamedir,-gamedir,1,,0,REQUIRED for setting game to kingpin,set to main,(game pak dir)
+	switch_PATH_MOD_,-moddir,-moddir,0,,0,set mod location,(mod pak dir)
+	switch_TEXT_BOX_,-maxlighta,-maxlighta,0,255,set to 0-255,maximum lighting brightness
+	switch_TEXT_BOX_,-maxlight,-maxlight,0,1.0,set to 0.0-1.0,maximum lighting brightness
+	switch_TEXT_BOX_,-minlighta,-minlighta,0,20,value: 0-255,Sets global minimum brightness.,Samples darker are scaled up to match value.,synonym for -ambienta.
+	switch_TEXT_BOX_,-minlight,-minlight,0,1.0,value:0.0-2.0,Old scale method,use -minlighta instead.
+	switch_TEXT_BOX_,-ambienta,-ambienta,0,20,value 0-255,Global ambient brightness,Ambient light is added to every surface in the map.
+	switch_TEXT_BOX_,-ambient,-ambient,0,1.0,value 0.0-2.0,Old scale method,use -ambienta instead.
+	switch_TEXT_BOX_,-radmin,-radmin,0,.005,value > 0.0,radiosity minimum cutoff,,Tiny values (<= .01) tend to look best.
+	switch_TEXT_BOX_,-scale,-scale,0,1.0,set to %.4f,lighting brightness scale
+	switch_TEXT_BOX_,-scale (entity),-entity,0,1.0,set to %.4f,entity lighting brightness scale
+	switch_TEXT_BOX_,-scale (surface),-direct,0,1.0,set to %.4f,surface lighting brightness scale
+	switch_TEXT_BOX_,-CPU threads,-threads,0,4,limit number of CPU threads so other programs can function
+}
+
+GAME
+{
+	switch_TEXT_BOX_,-fraglimit,+set fraglimit,1,1,Kill count in deathmatch to win the game 
+	switch_TEXT_BOX_,-developer,+set developer,1,1,Report errors etc in console.
+	switch_TEXT_BOX_,-cheats,+set cheats,1,1,Enable cheat commands
+	switch_TEXT_BOX_,-deathmatch,+set deathmatch,1,1,Test map in DM mode.
+	switch_TEXT_BOX_,-teamplay,+set teamplay,0,1,Test map in teamplay mode.
+	switch_TEXT_BOX_,-logfile,+set logfile,0,1,Write console text to qconsole.log,2=append
+	switch_TEXT_BOX_,-game/mod,+set game,1,main,Load a mod.
+	switch_TEXT_BOX_,-fullscreen,+set vid_fullscreen,0,0,load game in full screen
+	switch_TEXT_BOX_,-debug_light,+set r_debug_lighting,0,1,enable lighting debug mode
+	switch_TEXT_BOX_,-timelimit,+set timelimit,0,20,Timelimit
+	switch_TEXT_BOX_,-dmflags,+set dmflags,0,784,Timelimit
+	switch_TEXT_BOX_,-verbose,+set verbose,0,1,extra debug info in console
+	switch_TEXT_BOX_,-skill,+set skill,0,1,Single player skill level,0-4(easy to hard)
+	switch_TEXT_BOX_,-gl_clear,+set gl_clear,1,1,Disable hall of mirrors effect,Used for debuging
+	switch_TEXT_BOX_,-admin,+set modadmin,1,"\ip\loopback\type\2",Automaticly join as an admin(MM only)
+	switch_TEXT_BOX_,-sky,+set sky,0,pv,Force a differnt sky
+	switch_TEXT_BOX_,-showbbox,+set r_showbbox,0,1,Show player bounding box
+	switch_TEXT_BOX_,-novis,+set r_novis,0,1,disable vis.,render the whole map
+	switch_TEXT_BOX_,-s_volume,+set s_volume,0,0.1,Set sound volume.,0.0 to 1.0
+	switch_TEXT_BOX_,-debuggraph,+set debuggraph,0,1,enable debug graph display
+	switch_TEXT_BOX_,-cl_maxfps,+set cl_maxfps,0,60,set max fps
+	switch_TEXT_BOX_,-cl_testlights,+set cl_testlights,0,1,enable dynamic lighting test (see cl_lights)
+	switch_TEXT_BOX_,-cl_testentities,+set cl_testentities,0,1,enable entity test (see cl_entities)
+	switch_TEXT_BOX_,-g_vehicle_test,+set g_vehicle_test,0,1,enable vehicle test mode.,(0 is off. 1. 2. 3 give different vehicles)
+	switch_TEXT_BOX_,-gl_lightmap,+set gl_lightmap,0,1,enable static lighting test mode,no textures. just lights(white)
+	switch_TEXT_BOX_,-gl_mode,+set gl_mode,0,6,set screen resolution
+	switch_TEXT_BOX_,-net_shownet,+set net_shownet,0,1,debug net data
+	switch_TEXT_BOX_,-skin,+set skin,0,"male_thug/001 001 001"
+}
