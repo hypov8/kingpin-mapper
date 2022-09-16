@@ -3,7 +3,7 @@
 // make sure this file exists in the same folder as KingpinMapper.exe
 // KingpinMapper.exe can be located in any folder
 //
-// version 1
+// version 2
 // this configuration file is for quake1, ericw-tools (qbsp.exe, vis.exe, light.exe)
 // it can be adapted to run on many other command line compilers/utilities
 //
@@ -36,6 +36,11 @@
 // todo: use bsp
 //================================
 //================================
+
+
+//gui help strings. tips for paths etc. default kingpin. optional. GUI_QUAKE, GUI_QUAKE2
+GUI_QUAKE
+
 
 // pre-build tool.
 // generate .wal
