@@ -3,7 +3,7 @@
 // make sure this file exists in the same folder as KingpinMapper.exe
 // KingpinMapper.exe can be located in any folder
 //
-// version 1
+// version 2
 // this configuration file is for default kingpin mapping tools (kpbsp.exe, kpvis.exe, kprad.exe)
 // including ACC's image2wal.exe tool for pre-build event (fix map missing colored lighting)
 // it can be adapted to run on many other command line compilers/utilities
@@ -35,6 +35,10 @@
 // switch_PATH_TEXT //todo: 
 // todo: use bsp
 //================================
+
+//gui help strings. tips for paths etc. default kingpin. optional. GUI_QUAKE, GUI_QUAKE2
+//GUI_QUAKE
+
 
 // pre-build tool.
 // generate .wal
@@ -93,6 +97,7 @@ VIS
 	switch_CHECK_BOX,-verbose,-v,0,Display extra compile info
 	switch_TEXT_BOX_,-testlevel,-level,0,0,?
 	switch_TEXT_BOX_,-CPU threads,-threads,0,4,limit number of CPU threads so other programs can function	
+	switch_CHECK_BOX,-showsaw,-showsaw,0,Display extra data about,'leaf portal saw into leaf'
 }
 
 LIGHT
@@ -138,6 +143,7 @@ GAME
 	switch_TEXT_BOX_,-fraglimit,+set fraglimit,1,1,Kill count in deathmatch to win the game 
 	switch_TEXT_BOX_,-developer,+set developer,1,1,Report errors etc in console.
 	switch_TEXT_BOX_,-cheats,+set cheats,1,1,Enable cheat commands
+	switch_TEXT_BOX_,-coop,+set coop,1,1,let friends join a single player game.
 	switch_TEXT_BOX_,-deathmatch,+set deathmatch,1,1,Test map in DM mode.
 	switch_TEXT_BOX_,-teamplay,+set teamplay,0,1,Test map in teamplay mode.
 	switch_TEXT_BOX_,-logfile,+set logfile,0,1,Write console text to qconsole.log,2=append
