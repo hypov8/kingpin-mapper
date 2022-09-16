@@ -3,10 +3,12 @@
 #AutoIt3Wrapper_Icon=D:\_code_\icon\kp_map_compile.ico
 #AutoIt3Wrapper_Outfile=KingpinMapper.exe
 #AutoIt3Wrapper_UseX64=n
-#AutoIt3Wrapper_Res_Fileversion=1.0.6.1
+#AutoIt3Wrapper_Res_Fileversion=1.0.7.1
 #AutoIt3Wrapper_Res_Fileversion_AutoIncrement=p
 
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+
+Global $GUI_VERSION = "1.0.7"
 
 ;#AutoIt3Wrapper_Res_HiDpi=y
 
@@ -24,6 +26,13 @@
 ;added backup .map option
 ;fixed bug using DOS names. map compilers reqire full .map name. now only folder name is converted to 8.3. so map name must NOT contain spaces
 ;fixed bug testing compiler checked values that can be invalid
+;added append map switch to config
+;
+;v1.0.7 2021-07-11
+;added shortcut keys  ALT+C=Compile. ALT+P=Play. ALT+V=View Bat. ALT+R=Refresh Maps.
+;added quake example tips
+;updated config file option to search game type. changes gui tips
+;changed exe paths gui. easier to understand maps folder used
 ;
 ;todo
 ;=========================
@@ -31,6 +40,8 @@
 ;add .bsp file switch in config
 ;check for incompatable forward slash?
 ;find cause of delay when pressing build for the first time
+;game selecter via UI
+
 
 
 #include <GuiListView.au3>
@@ -50,13 +61,13 @@ Opt("MustDeclareVars", 1)
 
 
 #Region ### START Koda GUI section ### Form=C:\Programs\codeing\autoit-v3\SciTe\Koda\Dave\kp\KingpinMapBuild.kxf
-Global $KingpinMapBuild = GUICreate("Kingpin-Mapper by HypoV8 (v1.0.6)", 455, 343, -1, -1)
+Global $KingpinMapBuild = GUICreate("Kingpin-Mapper by HypoV8 (v1.0.7)", 455, 343, -1, -1)
 GUISetOnEvent($GUI_EVENT_CLOSE, "KingpinMapBuildClose")
 Global $Group_maps = GUICtrlCreateGroup("Maps", 0, 0, 377, 233, BitOR($GUI_SS_DEFAULT_GROUP,$BS_CENTER))
 GUICtrlSetResizing(-1, $GUI_DOCKLEFT+$GUI_DOCKTOP+$GUI_DOCKWIDTH+$GUI_DOCKHEIGHT)
 Global $List0_maps = GUICtrlCreateList("", 8, 14, 305, 188)
 GUICtrlSetOnEvent(-1, "List0_mapsClick")
-Global $Button0_build_map = GUICtrlCreateButton("&Compile", 316, 16, 53, 49)
+Global $Button0_build_map = GUICtrlCreateButton("&Compile", 316, 16, 53, 49, $WS_BORDER)
 GUICtrlSetTip(-1, "Compile .map")
 GUICtrlSetOnEvent(-1, "Button0_build_mapClick")
 Global $Button0_view_bat = GUICtrlCreateButton("&View .Bat", 316, 116, 53, 29)
@@ -225,6 +236,14 @@ Global Const $g_sFilename_cfg_path_full = 		@ScriptDir &"\"& $g_sFilename_cfg_pa
 Global Const $g_sFilename_cfg_default_full = 	@ScriptDir &"\"& $g_sFilename_cfg_default
 Global Const $g_sFilename_cfg_custom_full = 	@ScriptDir &"\"& $g_sFilename_cfg_custom
 Global Const $g_sFileName_bat_full = 			@TempDir &"\kingpinMapper.bat"
+
+Global $GUI_StringType = 0 ; default kingpin. 1=quake1, 2=quake2
+
+Global $GUI_Title[3] = ["Kingpin-Mapper by HypoV8", _
+						"Quake1-Mapper by HypoV8", _
+						"Quake2-Mapper by HypoV8"]
+WinSetTitle($KingpinMapBuild,"", string($GUI_Title[0] &"  (v"& $GUI_VERSION&")"))
+
 #EndRegion
 
 #Region ;==> global keys
@@ -286,6 +305,12 @@ Func fn_ReadConfigFile_Default()
 				$iIdx = fn_FillConfigFile_Default_Array($iGUI_REGION_3_VIS, $iIdx+1, $iLineCount, $aTmpArray)
 			elseIf StringCompare($aTmpArray[$iIdx], "LIGHT",1) = 0 Then
 				$iIdx = fn_FillConfigFile_Default_Array($iGUI_REGION_4_LIGHT, $iIdx+1, $iLineCount, $aTmpArray)
+			ElseIf  StringCompare($aTmpArray[$iIdx], "GUI_QUAKE",1) = 0 Then
+				$GUI_StringType = 1
+				WinSetTitle($KingpinMapBuild,"", string($GUI_Title[1] &"  (v"& $GUI_VERSION&")"))
+			ElseIf  StringCompare($aTmpArray[$iIdx], "GUI_QUAKE2",1) = 0 Then
+				$GUI_StringType = 2
+				WinSetTitle($KingpinMapBuild,"", string($GUI_Title[2] &"  (v"& $GUI_VERSION&")"))
 			EndIf
 		Next
 	EndIf
@@ -812,46 +837,86 @@ EndFunc
 
 #Region ;==> popup GUI for Directories
 Func fn_Buld_Gui_Directories()
-	Local $iXPos= 8, $iYPos = 10, $iOffXtra =0
+	Local $iXPos= 8, $iYPos = 16, $iOffXtra =0
 	Local $iCount, $ilineNum =0, $iIdx
 	Local $aPos = WinGetPos ( $KingpinMapBuild )
-	local $aPathDescriptions[7] = [ "Game.exe path. (eg. C:/Kingpin/kingpin.exe)", _
-									"Base/main path. (eg. C:/Kingpin/main/)", _
-									"Mod path(optional) (eg. C:/Kingpin/gunrace/)", _
-									"Pre build path. (eg. C:/Kingpin/kprad/image2wal.exe)", _
-									"Bsp.exe path. (eg. C:/Kingpin/kprad/kpbsp.exe)", _
-									"Vis.exe path. (eg. C:/Kingpin/kprad/kpvis.exe)", _
-									"Rad.exe path. (eg. C:/Kingpin/kprad/kprad.exe)" ]
+	static local $EXE_Names[3] = ["<-- Game.exe.", "<-- Base path", "<-- Mod path"]
+	static local $aPathDescriptions[7] = [ _
+		"Game.exe path. [eg. C:/Kingpin/kingpin.exe]", _
+		"Base/main path. [eg. C:/Kingpin/main/]", _
+		"Mod path(optional) [eg. C:/Kingpin/gunrace/]", _
+		"Pre build path. [eg. C:/Kingpin/kprad/image2wal.exe]", _
+		"Bsp.exe path. [eg. C:/Kingpin/kprad/kpbsp.exe]", _
+		"Vis.exe path. [eg. C:/Kingpin/kprad/kpvis.exe]", _
+		"Rad.exe path. [eg. C:/Kingpin/kprad/kprad.exe]" ]
+	static local $aPathTip_quake1[7] = [ _ ;quake1
+		"Quake.exe path. [eg. C:/QuakeSP/quakespasm.exe]", _
+		"id1/base path. [eg. C:/QuakeSP/id1/]", _
+		"Mod path(optional) [eg. C:/QuakeSP/working/]", _
+		"Bsputils path. [eg. C:/QuakeSP/ericw-18/bsputil.exe]", _
+		"Bsp.exe path. [eg. C:/QuakeSP/ericw-18/qbsp.exe]", _
+		"Vis.exe path. [eg. C:/QuakeSP/ericw-18/vis.exe]", _
+		"Light.exe path. [eg. C:/QuakeSP/ericw-18/light.exe]" ]
+	static local $aPathTip_quake2[7] = [ _ ;quake2
+		"Game.exe path. [eg. C:/Quake2/quake2.exe]", _
+		"Base path. [eg. C:/Quake2/base/]", _
+		"Mod path(optional) [eg. C:/Quake2/ctf/]", _
+		"Bsputils path. [eg. C:/Quake2/_tools/bsputil.exe]", _
+		"Bsp.exe path. [eg. C:/Quake2/_tools/qbsp.exe]", _
+		"Vis.exe path. [eg. C:/Quake2/_tools/qvis.exe]", _
+		"Light.exe path. [eg. C:/Quake2/_tools/arghrad3.exe]" ]
 
+	if ($GUI_StringType = 1) Then
+		$aPathDescriptions = $aPathTip_quake1
+	ElseIf 	($GUI_StringType = 2) Then
+		$aPathDescriptions = $aPathTip_quake2
+	EndIf
+
+	;create GUI
 	GUISetState(@SW_DISABLE,$KingpinMapBuild)
-
 	$g_ahGUI_ID[$iGUI_REGION_6_DIRECTORIES] = GUICreate("Setup Directory's", 455, 343, $aPos[0],$aPos[1],  BitXOR($GUI_SS_DEFAULT_GUI, $WS_MINIMIZEBOX), -1, $KingpinMapBuild) ;BitOR($WS_CLIPCHILDREN,$WS_BORDER, $WS_POPUP
 	GUISetOnEvent($GUI_EVENT_CLOSE, "Button_opt_cancel_"&$iGUI_REGION_6_DIRECTORIES, $g_ahGUI_ID[$iGUI_REGION_6_DIRECTORIES])
+	GUISetState(@SW_SHOW, $g_ahGUI_ID[$iGUI_REGION_6_DIRECTORIES]) ;show gui then load elements
 
-	GUICtrlCreateGroup("", 2, 0, 451, 341)
+
+	;folder paths
+	GUICtrlCreateGroup("Game Paths", 2, 0, 349, 137)
+	For $iIdx = 0 to 2
+		GUICtrlCreateLabel($aPathDescriptions[$iIdx], 30, $iYPos, 300, 15)
+		GUICtrlCreateButton("...", 10, $iYPos+16, 20, 18)
+		GUICtrlSetOnEvent(-1, "Button_path_"&$iIdx)
+		$g_ahGUI_ID_inputBox[$iGUI_REGION_6_DIRECTORIES][$iIdx] = GUICtrlCreateInput($sFilePaths[$iIdx],30, $iYPos+16, 310, 18)
+		$iYPos += 40 ;36
+	Next
+	GUICtrlCreateGroup("", -99, -99, 1, 1)
+
+
+	;maps folder buttons
+	GUICtrlCreateGroup("Path for Maps", 355, 0, 97, 137)
+	$iYPos = 16
+	For $iIdx = 0 to 2
+		$g_ahGUI_ID_MapPaths[$iIdx] = GUICtrlCreateRadio($EXE_Names[$iIdx], 360, $iYPos+14, 88, 22, BitOR($GUI_SS_DEFAULT_RADIO,$BS_PUSHLIKE,$BS_FLAT))
+		$iYPos += 40 ;36
+	Next
+	GUICtrlSetState($g_ahGUI_ID_MapPaths[$sFilePaths[7]], $GUI_CHECKED)
+	GUICtrlCreateGroup("", -99, -99, 1, 1)
+
+	;exe paths
+	GUICtrlCreateGroup("Tools Path", 2, 138, 451, 203)
+	$iYPos = 154
+	For $iIdx = 3 to 6
+		GUICtrlCreateLabel($aPathDescriptions[$iIdx], 30, $iYPos, 300, 15)
+		GUICtrlCreateButton("...", 10, $iYPos+16, 20, 18)
+		GUICtrlSetOnEvent(-1, "Button_path_"&$iIdx)
+		$g_ahGUI_ID_inputBox[$iGUI_REGION_6_DIRECTORIES][$iIdx] = GUICtrlCreateInput($sFilePaths[$iIdx],30, $iYPos+16, 412, 18)
+		$iYPos += 40 ;36
+	Next
+
+	; save/cancel
 	$g_ahGUI_ID_save[$iGUI_REGION_6_DIRECTORIES] = GUICtrlCreateButton("Save", 350,316,50,22,-1,-1)
 	GUICtrlSetOnEvent($g_ahGUI_ID_save[$iGUI_REGION_6_DIRECTORIES], "Button_opt_save_"&$iGUI_REGION_6_DIRECTORIES)
 	$g_ahGUI_ID_cancel[$iGUI_REGION_6_DIRECTORIES] = GUICtrlCreateButton("Cancel", 400,316,50,22,-1,-1)
 	GUICtrlSetOnEvent($g_ahGUI_ID_cancel[$iGUI_REGION_6_DIRECTORIES], "Button_opt_cancel_"&$iGUI_REGION_6_DIRECTORIES)
-	GUISetState(@SW_SHOW, $g_ahGUI_ID[$iGUI_REGION_6_DIRECTORIES]) ;show gui then load elements
-
-	For $iIdx = 0 to 6
-		GUICtrlCreateLabel($aPathDescriptions[$iIdx], 30, $iYPos, 255, 15)
-		GUICtrlCreateButton("...", 10, $iYPos+16, 20, 18)
-		GUICtrlSetOnEvent(-1, "Button_path_"&$iIdx)
-		$g_ahGUI_ID_inputBox[$iGUI_REGION_6_DIRECTORIES][$iIdx] = GUICtrlCreateInput($sFilePaths[$iIdx],30, $iYPos+16, 350, 18)
-		$iYPos += 36
-	Next
-
-	$iYPos+= 18
-	GUICtrlCreateGroup("Maps Path", 12, 262, 250, 70)
-	$g_ahGUI_ID_MapPaths[0] = GUICtrlCreateRadio("Use Game.exe path for maps.", 30, $iYPos, 180, 16)
-	$g_ahGUI_ID_MapPaths[1] = GUICtrlCreateRadio("Use Base/main path for maps.", 30, $iYPos+15, 180, 16);
-	$g_ahGUI_ID_MapPaths[2] = GUICtrlCreateRadio("Use Mod path for maps.", 30, $iYPos+30, 180, 16)
-	GUICtrlSetState($g_ahGUI_ID_MapPaths[$sFilePaths[7]], $GUI_CHECKED)
-
-	;end groups
-	GUICtrlCreateGroup("", -99, -99, 1, 1)
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
 
 EndFunc
@@ -1083,6 +1148,7 @@ Func fn_Buld_GUI_About()
 						"=======" &@CRLF& _
 						"Designed for quake style compilers. Fully customizable. See 'KingpinMapper_default.txt'" &@CRLF& _
 						"Concept based on Q3Map2Build by DLB." &@CRLF& _
+						"Shortcuts. ALT+C=Compile. ALT+P=Play. ALT+V=View Bat. ALT+R=Refresh Maps." &@CRLF& _
 						"Use freely. If you use the source, make sure i get credit." &@CRLF& _
 						"" &@CRLF& _
 						"Saving/Loading Profiles" &@CRLF& _
