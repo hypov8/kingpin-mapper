@@ -1,0 +1,6 @@
+
+*.exe
+*/KingpinMapper_custom.txt
+*/KingpinMapper_path.txt
+_zips/*
+_backup/*

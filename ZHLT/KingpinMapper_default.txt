@@ -1,0 +1,218 @@
+// KingpinMapper configuration by hypov8
+//
+// KingpinMapper.exe can be located in any folder
+// make sure this file exists in a sub folder to KingpinMapper.exe
+//
+// version 3
+//==========
+// the below settings will be used when GUI is set to 'default' compile
+// 'custom' will be generated based of these but stored in a seperate file. thus allowing 2 'profiles'
+//
+//
+//==============================
+// newcolum (start a new colum)
+// switch_APPENDMAP, (append map name to end. not all programs suport this, some use a switch instead) (requires 1 comma)
+// switch_CHECK_BOX, <display name>, <compile switch>, <checked(0/1/2)>, <tooltip>, <tip n..>
+// switch_TEXT_BOX_, <display name>, <compile switch>, <checked(0/1/2)>, <default text>, <tooltip>, <tip n..>
+// note: checked=2 is greyed out
+//
+//==============================
+// for options below use eg..
+// switch_PATH_EXE_, <display name>, <compile switch>, <checked(0/1/2)>, <default text>, <pathname(0/1/2)>, <tooltip>, <tip n..>
+// Note: <pathname(0/1/2)> 0=folder, 1=folder/filename, 2=folder/text
+//================================
+// switch_PATH_EXE_ //insert kingpin.exe folder/file after switch
+// switch_PATH_BASE //insert /main folder after switch      	//note: <pathname(1)> dont work
+// switch_PATH_MOD_ //insert /mod folder  after switch       	//note: <pathname(1)> dont work
+// switch_PATH_PRE_ //insert img2wal.exe folder/file after switch
+// switch_PATH_BSP_ //insert kpbsp.exe folder/file after switch
+// switch_PATH_VIS_ //insert kpvis.exe folder/file after switch
+// switch_PATH_RAD_ //insert kprad.exe folder/file after switch
+// switch_PATH_MAP_ //insert full .map folder+file name			//note: only <pathname(1)> works.
+//================================
+//GUI help strings. tips for paths etc. defaults to kingpin.
+//options: GUI_KINGPIN, GUI_QUAKE1, GUI_QUAKE2, GUI_QUAKE3, GUI_HALFLIFE
+GUI_HALFLIFE
+
+
+//================================
+// game specific notes:
+//================================
+// This configuration file is for halflife ZHLT
+//switched sourced from http://zhlt.info/command-reference.html
+//
+//================================
+
+
+
+// HLCSG
+TOOL1_HLCSG
+{
+    ///////////////////
+    // --== global ==--
+	switch_APPENDMAP
+    switch_CHECK_BOX,-chart,            -chart,         0   ,Display bsp statitics.
+    switch_CHECK_BOX,-estimate,         -estimate,      0   ,Display estimated time during compile.,This option replaces the 10...20... style progress indicators with a estimate bar with some estimated completion times, as well as the exact number of the current job and how many jobs there are to do. The three different times remaining factor in varying amounts of historical data to guess how much longer it will take to run. It is good for a ballpark figure, but frequently not much more accurate than that.
+    switch_CHECK_BOX,-low,              -low,           0   ,Run program an altered priority level.,Setting the priority of the compile tools to -low is very handy, as you can multitask and do other things without really feeling the drain of the compile programs on the system, provided there is enough memory for the tools and the other programs you use.
+    switch_CHECK_BOX,-noinfo,           -noinfo,        0   ,Do not show tool configuration information.,ZHLT 2.1 added a configuration display for each of the tools as they run, to display the current settings for all configurable options as well as their defaults. This sometimes causes problems with other programs, most notably when compiling within Worldcraft, it likes to crash when too much stuff scrolls into its compile process window.
+    switch_CHECK_BOX,-nolog,            -nolog,         0   ,Don't generate the compile logfiles.,This option just disables the generation of the .log and .err files which are normally generated whenever the compile tools run.
+    switch_CHECK_BOX,-verbose,          -verbose,       0,  ,Compile with verbose messages.,Many of the tools have 'minor warnings' and informative messages which are displayed when verbose mode is set. As the ZHLT 2.x series developed, many of the developer specific settings have been moved to developer messages, while the mapper-related messages remain as verbose messages.
+    //
+    switch_TEXT_BOX_,-dev #,            -dev,           0, 0,Compile with developer message.,This option will cause the program to print out the bsp statistics right before it writes out the bsp. It is most handy to do -chart with HLRAD and HLVIS at the end of the compiles. The ripent program will alway displays the chart.
+    switch_TEXT_BOX_,-lightdata #,      -lightdata,     0, 6,Set custom lightdata maximum (MB).,Higher values than the default (6MB) can cause performance issues. You should perform compatability testing before releasing maps if they're over the preset limit.
+    switch_TEXT_BOX_,-texdata #,        -texdata,       0, 2,Alter maximum texture memory limit (in KB).,Half-Life was built with a 2MB texture limit, as was Opposing Force. The ZHLT default limit is 4MB. Even 4MB can be a bit much, when combined with model textures, skies, hud graphics, and more. This is especially true of people with older cards (Voodoo 1 and 2's, etc).
+    switch_TEXT_BOX_,-threads #,        -threads,       0, 1,Manually specify the number of threads to run.,This option is generally only necessary on the non-windows versions of the tools, where there is not a standard way to detect the number of processors in the system and auto-set the value. It can be manually set on windows machines, primarily if you wish to use fewer threads than processors.
+    newcolum
+    // --== end shared switches ==--
+    ////////////////////////////////
+    //
+    //CSG
+    switch_CHECK_BOX,-noclip,           -noclip,        0   ,Don't create clipping hull.,Half-Life, like Quake1, has 4 hulls: 1 visual hull and 3 collision hulls. This option disables generation of the collision hulls for a small savings in compile time. Note that the world will not be solid at all (everything will fall into the void) with this option set.
+    switch_CHECK_BOX,-noclipeconomy	,   -noclipeconomy, 0   ,Disables redundant clipnode stripping.,Clipnodes are 'planes' that restrict the player movement. They are placed along the walls and floors of your level, so that they player cannot pass though them. However, like everything else in the Half-Life universe, they are limited, and will max out with compile errors if you end up using too many of them.,HLCSG will analyse how the clipnodes are being used in your map. If it thinks that it can get away with not using clipnodes in any particular situation (such as in func_illusionaries which don't need clipnodes), then HLCSG will strip them away from the level. This means that by default, your clipnode counts will be lower than normal. This doesn't mean that you will never see another MAX_MAP_CLIPNODES error, it just means it's less likely to happen in the first place.,Use this switch to turn of clipnode economy mode if you believe that it is causing problems.
+    switch_CHECK_BOX,-nonulltex	,       -nonulltex,     0   ,Disables NULL texture stripping.
+    switch_CHECK_BOX,-noskyclip	,       -noskyclip,     0   ,Disable automatic clipping of SKY brushes.,By default HLCSG will CLIP all SKY brushes, as well as remove all non-sky faces on the 'inside' of a sky brush (which eases up vis time, and improves some time and memory usage in rad as well).
+    switch_CHECK_BOX,-nowadtextures	,   -nowadtextures, 0   ,Include all used textures into bsp.,This option is obsoleted by -wadinclude and is only left in to retain some backwards compatibility.
+    switch_CHECK_BOX,-onlyents,         -onlyents,      0   ,Do an entity update from .map to .bsp,This option will take the entities from the .map file and update them into the .bsp file. For the most part, entities can only be edited. Adding or removing any can reorder the other entities which frequently breaks brush based entities, especially triggers.
+    switch_CHECK_BOX,-wadautodetect,    -wadautodetect, 0   ,Enable automatic wad detection.,Automatic wad detection is a simple utility that will exclude any wadfiles from the bsp that aren't in use by the map. This enables you to add any assortment of wadfiles you wish, and yet only have those that are actually used by the map included in the .bsp file.
+    switch_TEXT_BOX_,-brushunion #,     -brushunion,    0, 0,Threshold to warn about overlapping brushes.,This option is a mapper debugging feature. The value passed in is a percentage (0 to 100) of overlap of two brushes before a warning is printed. Starting with a high value (95+) is a good idea, as going too low to start can print hundreds or thousands of messages. The brush numbers of the intersecting brushes and the percentage in which they intersect each other is displayed for each occurence. This option is off by default as it dramatically slows down HLCSG to do these calculations.
+    switch_TEXT_BOX_,-cliptype #,       -cliptype,      0, legacy ,Select the clip hull generation method.,Choices are smallest, normalized, simple, precise or legacy (default).,The ExpandBrush function of HLCSG has been reworked to fix 2 bad assumptions that led to "sticky" exterior corners in Half-Life maps.,To use the new clip hull feature, use "-cliptype precise". If you want to same some clipnodes, you can use "-cliptype simple" which will shift player models a few units upward on sloped floors. If you want to use the new HLCSG for the speed improvement but want the old style clipping, use "-cliptype legacy". If you want to have the smallest possible number of clipnodes and don't mind some stickyness (not recommended), use "-cliptype smallest". "-cliptype normalized" uses bugfix 1 and skips bugfix 2 for people who don't want denormalized brushes.
+    switch_TEXT_BOX_,-hullfile file,    -hullfile,      0, 0,Load a custom hullfile.,Loads a custom set of hulls for the collision hull generation. The file is composed of 3 lines of 3 whitespace delimited numbers. Each line is an X Y Z size of the bounding box it is for. Only specific mod authors and their mapping teams should ever worry about this feature.
+    switch_TEXT_BOX_,-nullfile file	,   -nullfile,      0, 0,Specify a file containing a list of entities to retexture with the NULL texture.
+    switch_TEXT_BOX_,-tiny #,           -tiny,          0, 0,Minimum brush face surface area before it is discarded.,Tiny brush faces are outright removed. The current cut-off is 0.5 square units. It is dangerous to drop faces in this manner, as the BSP tree for the world can be unusable, or generate leaf portal errors or hall-of-mirrors vis errors.,
+    switch_TEXT_BOX_,-wadcfgfile path,  -wadcfgfile,    0, 0,Manually specifies the path to the wad.cfg file. By default, the tools will look in the same directory and the Half-Life directory.-wadconfig name, , ,Use a custom wad configuration in the wad.cfg custom wad configuration file.,Custom wad configurations are used to enable you to choose which .wad files you want written into the the .bsp file, regardless of what happens to be in your editor, for any given game configuration. So, now, HLCSG will ignore the wads that you have configured in your editor, and instead only write in the ones you specify.
+    switch_TEXT_BOX_,-wadinclude file,  -wadinclude,    0, 0,Place textures used from wad specified into bsp.,This option will cause csg to include used textures from the named wadfile into the bsp. It does partial name matching, is not case sensitive, and can also match directory names. If multiple includes need to be done, -wadinclude must be specified multiple times, once for each include. Only textures actually used in the map are included into the bsp.
+}
+
+TOOL2_HLBSP
+{
+    ///////////////////
+	switch_APPENDMAP
+    switch_CHECK_BOX,-chart,            -chart,         0   ,Display bsp statitics.
+    switch_CHECK_BOX,-estimate,         -estimate,      0   ,Display estimated time during compile.,This option replaces the 10...20... style progress indicators with a estimate bar with some estimated completion times, as well as the exact number of the current job and how many jobs there are to do. The three different times remaining factor in varying amounts of historical data to guess how much longer it will take to run. It is good for a ballpark figure, but frequently not much more accurate than that.
+    switch_CHECK_BOX,-low,              -low,           0   ,Run program an altered priority level.,Setting the priority of the compile tools to -low is very handy, as you can multitask and do other things without really feeling the drain of the compile programs on the system, provided there is enough memory for the tools and the other programs you use.
+    switch_CHECK_BOX,-noinfo,           -noinfo,        0   ,Do not show tool configuration information.,ZHLT 2.1 added a configuration display for each of the tools as they run, to display the current settings for all configurable options as well as their defaults. This sometimes causes problems with other programs, most notably when compiling within Worldcraft, it likes to crash when too much stuff scrolls into its compile process window.
+    switch_CHECK_BOX,-nolog,            -nolog,         0   ,Don't generate the compile logfiles.,This option just disables the generation of the .log and .err files which are normally generated whenever the compile tools run.
+    switch_CHECK_BOX,-verbose,          -verbose,       0,  ,Compile with verbose messages.,Many of the tools have 'minor warnings' and informative messages which are displayed when verbose mode is set. As the ZHLT 2.x series developed, many of the developer specific settings have been moved to developer messages, while the mapper-related messages remain as verbose messages.
+    switch_TEXT_BOX_,-dev #,            -dev,           0, 0,Compile with developer message.,This option will cause the program to print out the bsp statistics right before it writes out the bsp. It is most handy to do -chart with HLRAD and HLVIS at the end of the compiles. The ripent program will alway displays the chart.
+    switch_TEXT_BOX_,-lightdata #,      -lightdata,     0, 6,Set custom lightdata maximum (MB).,Higher values than the default (6MB) can cause performance issues. You should perform compatability testing before releasing maps if they're over the preset limit.
+    switch_TEXT_BOX_,-texdata #,        -texdata,       0, 2,Alter maximum texture memory limit (in KB).,Half-Life was built with a 2MB texture limit, as was Opposing Force. The ZHLT default limit is 4MB. Even 4MB can be a bit much, when combined with model textures, skies, hud graphics, and more. This is especially true of people with older cards (Voodoo 1 and 2's, etc).
+    switch_TEXT_BOX_,-threads #,        -threads,       0, 1,Manually specify the number of threads to run.,This option is generally only necessary on the non-windows versions of the tools, where there is not a standard way to detect the number of processors in the system and auto-set the value. It can be manually set on windows machines, primarily if you wish to use fewer threads than processors.
+    newcolum
+    ////////////////////////////////
+    switch_CHECK_BOX,-leakonly,         -leakonly,      	0,Run BSP only enough to check for LEAKs.,If you already know a map has a leak, this is a good option to just save some time in HLBSP and just generate the pts file.
+    switch_CHECK_BOX,-noopt,            -noopt,      		0,Skip plane optimization on output.,HLBSP version p14 and later automatically removes unused planes when writing the output BSP. This switch turns off that behavior.
+    switch_CHECK_BOX,-noclip,           -noclip,      		0,Don't process the clipping hull (not for final runs).,This is a continuation of the -noclip option in HLCSG. In this case it tells HLBSP that HLCSG was compiled with -noclip and to not attempt to BSP the collision hulls as they are not present in the bsp.
+    switch_CHECK_BOX,-nofill,           -nofill,      		0,Don't fill outside (will mask LEAKs) (not for final runs).,This step causes filling to not be performed, which will cause all the faces on the outside of the map to not be discarded. It is probably a bad idea to rad a map that has been compiled this way, though vis should run normally.
+    switch_CHECK_BOX,-nonulltex,        -nonulltex,      	0,Disables NULL texture stripping.
+    switch_CHECK_BOX,-notjunc,          -notjunc,      	    0,Don't break edges on t-junctions (not for final runs).,This is a development/debugging option that should not be set in normal use.
+    switch_TEXT_BOX_,-maxnodesize,      -maxnodesize, 0, 	0,Sets the maximum portal node size.,This option tweaks the maximum size of a portal node. Setting it smaller will bsp the world into smaller chunks at the cost of higher r_speed values, but it can pay itself back in many cases with making vis either faster, or more accurate, or both.
+    switch_TEXT_BOX_,-subdivide,        -subdivide, 0, 		0,Sets the face subdivide size.,Faces in Half-Life are subdivided by this value (in units). The default is 240, and it should never need to be set lower (as it just increases r_speed values). Setting the value higher may cause problems in software mode. If in doubt, leave at the failsafe default value of 240.
+}
+
+TOOL3_HLVIS
+{
+	switch_APPENDMAP
+    switch_CHECK_BOX,-chart,            -chart,         0   ,Display bsp statitics.
+    switch_CHECK_BOX,-estimate,         -estimate,      0   ,Display estimated time during compile.,This option replaces the 10...20... style progress indicators with a estimate bar with some estimated completion times, as well as the exact number of the current job and how many jobs there are to do. The three different times remaining factor in varying amounts of historical data to guess how much longer it will take to run. It is good for a ballpark figure, but frequently not much more accurate than that.
+    switch_CHECK_BOX,-low,              -low,           0   ,Run program an altered priority level.,Setting the priority of the compile tools to -low is very handy, as you can multitask and do other things without really feeling the drain of the compile programs on the system, provided there is enough memory for the tools and the other programs you use.
+    switch_CHECK_BOX,-noinfo,           -noinfo,        0   ,Do not show tool configuration information.,ZHLT 2.1 added a configuration display for each of the tools as they run, to display the current settings for all configurable options as well as their defaults. This sometimes causes problems with other programs, most notably when compiling within Worldcraft, it likes to crash when too much stuff scrolls into its compile process window.
+    switch_CHECK_BOX,-nolog,            -nolog,         0   ,Don't generate the compile logfiles.,This option just disables the generation of the .log and .err files which are normally generated whenever the compile tools run.
+    switch_CHECK_BOX,-verbose,          -verbose,       0,  ,Compile with verbose messages.,Many of the tools have 'minor warnings' and informative messages which are displayed when verbose mode is set. As the ZHLT 2.x series developed, many of the developer specific settings have been moved to developer messages, while the mapper-related messages remain as verbose messages.
+    switch_TEXT_BOX_,-dev #,            -dev,           0, 0,Compile with developer message.,This option will cause the program to print out the bsp statistics right before it writes out the bsp. It is most handy to do -chart with HLRAD and HLVIS at the end of the compiles. The ripent program will alway displays the chart.
+    switch_TEXT_BOX_,-lightdata #,      -lightdata,     0, 6,Set custom lightdata maximum (MB).,Higher values than the default (6MB) can cause performance issues. You should perform compatability testing before releasing maps if they're over the preset limit.
+    switch_TEXT_BOX_,-texdata #,        -texdata,       0, 2,Alter maximum texture memory limit (in KB).,Half-Life was built with a 2MB texture limit, as was Opposing Force. The ZHLT default limit is 4MB. Even 4MB can be a bit much, when combined with model textures, skies, hud graphics, and more. This is especially true of people with older cards (Voodoo 1 and 2's, etc).
+    switch_TEXT_BOX_,-threads #,        -threads,       0, 1,Manually specify the number of threads to run.,This option is generally only necessary on the non-windows versions of the tools, where there is not a standard way to detect the number of processors in the system and auto-set the value. It can be manually set on windows machines, primarily if you wish to use fewer threads than processors.
+    newcolum
+    ////////////////////////////////
+    switch_CHECK_BOX,-fast,             -fast, 	            0,Fast vis (NOT FOR FINAL COMPILES).,A fast vis is handy for running around in a developed map without dropping polygons.
+    switch_CHECK_BOX,-full,             -full, 	            0,Full vis.,This option enables extra calculations during vis, which help reduce the number of vis errors in a map over a normal vis.
+    switch_TEXT_BOX_,-maxdistance #,    -maxdistance, 0, 	0,Set the maximum visibility distance (in units).
+}
+
+TOOL4_HLRAD
+{
+	switch_APPENDMAP
+    switch_CHECK_BOX,-chart,            -chart,         0   ,Display bsp statitics.
+    switch_CHECK_BOX,-estimate,         -estimate,      0   ,Display estimated time during compile.,This option replaces the 10...20... style progress indicators with a estimate bar with some estimated completion times, as well as the exact number of the current job and how many jobs there are to do. The three different times remaining factor in varying amounts of historical data to guess how much longer it will take to run. It is good for a ballpark figure, but frequently not much more accurate than that.
+    switch_CHECK_BOX,-low,              -low,           0   ,Run program an altered priority level.,Setting the priority of the compile tools to -low is very handy, as you can multitask and do other things without really feeling the drain of the compile programs on the system, provided there is enough memory for the tools and the other programs you use.
+    switch_CHECK_BOX,-noinfo,           -noinfo,        0   ,Do not show tool configuration information.,ZHLT 2.1 added a configuration display for each of the tools as they run, to display the current settings for all configurable options as well as their defaults. This sometimes causes problems with other programs, most notably when compiling within Worldcraft, it likes to crash when too much stuff scrolls into its compile process window.
+    switch_CHECK_BOX,-nolog,            -nolog,         0   ,Don't generate the compile logfiles.,This option just disables the generation of the .log and .err files which are normally generated whenever the compile tools run.
+    switch_CHECK_BOX,-verbose,          -verbose,       0,  ,Compile with verbose messages.,Many of the tools have 'minor warnings' and informative messages which are displayed when verbose mode is set. As the ZHLT 2.x series developed, many of the developer specific settings have been moved to developer messages, while the mapper-related messages remain as verbose messages.
+    switch_TEXT_BOX_,-dev #,            -dev,           0, 0,Compile with developer message.,This option will cause the program to print out the bsp statistics right before it writes out the bsp. It is most handy to do -chart with HLRAD and HLVIS at the end of the compiles. The ripent program will alway displays the chart.
+    switch_TEXT_BOX_,-lightdata #,      -lightdata,     0, 6,Set custom lightdata maximum (MB).,Higher values than the default (6MB) can cause performance issues. You should perform compatability testing before releasing maps if they're over the preset limit.
+    switch_TEXT_BOX_,-texdata #,        -texdata,       0, 2,Alter maximum texture memory limit (in KB).,Half-Life was built with a 2MB texture limit, as was Opposing Force. The ZHLT default limit is 4MB. Even 4MB can be a bit much, when combined with model textures, skies, hud graphics, and more. This is especially true of people with older cards (Voodoo 1 and 2's, etc).
+    switch_TEXT_BOX_,-threads #,        -threads,       0, 1,Manually specify the number of threads to run.,This option is generally only necessary on the non-windows versions of the tools, where there is not a standard way to detect the number of processors in the system and auto-set the value. It can be manually set on windows machines, primarily if you wish to use fewer threads than processors.
+    newcolum
+    ////////////////////////////////
+    switch_CHECK_BOX,-circus,           -circus, 	    	    0,Enable 'circus' mode for locating unlit lightmaps.,This is a debugging option, which will cause all black pixels in any lightmap to be set to a random fullbright color. It only looks at the direct lighting to make this determination, and ignores any bounced radiosity data for making this determination.
+    switch_CHECK_BOX,-custshadwbounce,  -customshadowwithbounce,0,Enable custom shadows for bounced light.,By default, the zhlt_customshadow flag does not affect bounced light. Using this switch will enable custom shadows for bounced light.,This will only work with greyscale custom shadows. To enable color for the bounced light of custom shadows, use the -rgbtransfers parameter as well.
+    switch_CHECK_BOX,-dump,             -dump, 	    	        0,Dumps light patches to a file for HLRAD debugging info.,This is a developer option for ZHLT, to dump out the patch data generated by the chopping/subdividing and make sure it looks alright.
+    switch_CHECK_BOX,-extra,            -extra, 	    	    0,Turns on 9 point oversampling for lighting, making it look much better.,This switch should be used when running final map compiles.
+    switch_CHECK_BOX,-incremental,      -incremental, 	    	0,Use or create an incremental transfer list file.,This is a handy option for tweaking lighting, especially on slow or lower memory machines. BuildVisLeafs, MakeScales, and SwapTransfers can be skipped entirely on subsequent runs of HLRAD. Note that geometry must not change, but lighting can. Using the incremental file requires a simple but important procedure:
+    switch_CHECK_BOX,-nodiffuse,        -nodiffuse, 	    	0,Disables light_environment diffuse hack.
+    switch_CHECK_BOX,-nodynbounce,      -nodynbounce, 	    	0,Turn off bounces for dyanmic lights (overrides -bounce).,Prior to ZHLT 1.7, only the static light type (constant brightness, no switching) was used in bounce calculations. This switch activates that older behavior. Benefits include smaller lightdata sizes and a lower probability of a "too many lightstyles" error.
+    switch_CHECK_BOX,-nolerp,           -nolerp, 	    	    0,Disable three multi-point interpolation for radiosity patch blending, use nearest point sample instead.
+    switch_CHECK_BOX,-nomatrix,         -nomatrix, 	    	    0,Disable usage of vismatrix entirely.,As the sparse code does some compression, it requires a lot of thread synchronization and does not scale well past 2 CPU's. The -nomatrix switch was added to address this. However the addition of 'opaque brush entities' starting with ZHLT 2.2 hurts the -nomatrix method's performance quite a bit. There is no vismatrix in this method at all, so it essentially reduces the memory requirements to zero for that structure.
+    switch_CHECK_BOX,-nopaque,          -nopaque, 	    	    0,Disable all entities using zhlt_lightflags 2 to block light. Using opaque entities slows rad down, and using this option is useful for doing quicker non-final lighting compiles.
+    switch_CHECK_BOX,-noskyfix,         -noskyfix, 	    	    0,Disable light_environment being global.,ZHLT 2.1 added a simpler more manageable system for light_environment's. The new behavior is that a map only needs a single light_environment entity to light up all sky everywhere. The placement of the entity no longer matters. The -noskyfix option turns this feature off and enables the original code which require multiple light_environment's to properly light up an outdoor area.
+    switch_CHECK_BOX,-nospotpoints,     -nospotpoints, 	    	0,Disables light_spot spherical point sources.
+    switch_CHECK_BOX,-notexscale,       -notexscale, 	    	0,Do not scale radiosity patches with texture scale.,By default, HLRAD will take the texture scale and apply it to the chopping grid which is projected onto it. This option turns that off, and almost always increases the number of patches in a map as most maps have many walls scaled up to 2 and 3.
+    switch_CHECK_BOX,-rgbtransfers,     -rgbtransfers, 	    	0,Enables RGB Transfers (for custom shadows).
+    switch_CHECK_BOX,-sparse,           -sparse, 	            0,Enable low memory vismatrix algorithm.,The original vismatrix algorithm was limited to 65535 patches due to its design. Its memory usage also grew polynomially with the number of patches (patches * patches / 16 bytes). This option enables a compressed vismatrix, which at the cost of extra CPU time, breaks the 65535 limit, and also uses about 10% of the memory the vismatrix would.
+    newcolum
+    switch_TEXT_BOX_,-ambient ###,      -ambient,       0, 	    0,(r g b),Set ambient world light (0.0 to 1.0, r g b).,This option sets a minimum light value to every face so that nothing comes out pitch black. The values are red green blue, scaled from 0.0 to 1.0
+    switch_TEXT_BOX_,-bounce #,         -bounce,        0, 	    0,Set number of radiosity bounces.,This option sets the number of times light bounces in the radiosity pass. By the time the code gets to this point, all the data is precomputed, and extra bounces are very fast. It will make the shadows less harsh using more bounces, but can help light up dark areas much more naturally.
+    switch_TEXT_BOX_,-chop #,           -chop,          0, 		0,Set radiosity patch size for normal textures.,Each face in the world has a grid projected onto it, and chopped up into a rather coarse set of sample points. These points are patches, and are what HLRAD uses to do the bounced lighting calculations. A higher chop sacrifices quality for both speed and memory consumption of HLRAD. A lower chop increases the quality at the expense of speed and memory usage.
+    switch_TEXT_BOX_,-colourgamma,      -colourgamma,   0, 		0,(r g b),Sets different gamma values for r, g, b.
+    switch_TEXT_BOX_,-colourjitter,     -colourjitter,  0, 		0,(r g b),Adds noise, independent colours, for dithering.
+    switch_TEXT_BOX_,-colourscale,      -colourscale,   0, 		0,(r g b),Sets different lightscale values for r, g ,b.
+    switch_TEXT_BOX_,-coring #,         -coring,        0, 		0,Set lighting threshold before blackness.,This value controls how much light it takes before a surface will be lit with a non-black value.
+    switch_TEXT_BOX_,-dlight #,         -dlight,        0, 		0,Set direct lighting threshold.,This option is similar to -maxlight, except that it re-normalizes the direct lighting values instead of clipping them if they are too high.
+    switch_TEXT_BOX_,-dscale #,         -dscale,        0, 		0,Set direct lighting scale.
+    switch_TEXT_BOX_,-fade #,           -fade,          0, 		0,Set global fade (larger values = shorter lights).,This value adds in an artificial factor into the normal (1 / dist * dist) inverse square falloff calculations, by multiplying the denominator of the scale by the fade value. Point lights can set their own individual fade and falloff values, which override any global setting on the command line. These calculations only affect the direct lighting layer, as the radiosity pass always uses plain inverse square falloff.
+    switch_TEXT_BOX_,-falloff #,        -falloff,       0, 		0,Set global falloff mode (1 = inv linear, 2 = inv square).,This option can change the normal inverse square falloff of lighting in the direct lighting layer with inverse falloff.
+    switch_TEXT_BOX_,-gamma #,          -gamma,         0, 		0,Set global gamma value.,This option also occurs after the direct and radiosity layers are added together, and a global gamma correction is calculated and applied to the lighting before it is finalized.
+    switch_TEXT_BOX_,-jitter ###,       -jitter,        0,      0,(r g b),Adds noise, monochromatic, for dithering.
+    switch_TEXT_BOX_,-lights,           -lights,        0,	    0,Manually specify a lights.rad file to use.,A single .rad file can be added to the compile manually, in addition to the defaults of lights.rad and mapname.rad
+    switch_TEXT_BOX_,-maxlight #,       -maxlight,      0, 		0,Set maximum light intensity value.,This option can be used to cap the bright spots, if you want a map to come out darker overall.
+    switch_TEXT_BOX_,-scale #,          -scale ,        0, 		0,Set global light scaling value.,This option scales the final light values right after the direct lighting layer is added to the radiosity bounced lighting layer. Low values make the world darker, higher values make it brighter.
+    switch_TEXT_BOX_,-sky #,            -sky,           0, 		0,Set ambient sunlight contribution in the shade outside.,Many faces have line of sight to sky, but fall in the shadow of some other object. This option affects how much of the normal sky lighting is put into the shadows.
+    switch_TEXT_BOX_,-smooth #,         -smooth,        0, 		0,Set smoothing threshold for blending (in degrees).,By default HLRAD uses Phong shading on all faces. If the angle between two edges is less than this value, it will be shaded with the Phong smoothing code, otherwise it won't.
+    switch_TEXT_BOX_,-softlight ####,   -softlight,     0, 	    0,(r g b d),Scaling values for backwards-light hack.
+    switch_TEXT_BOX_,-texchop #,        -texchop,       0, 		0,Set radiosity patch size for texture light faces.,Texture light faces are chopped with a different granularity than the normal faces, primarily so that the lighting looks good. Generally it should be half of the chop value. Adding -extra to HLRAD will automatically divide this value by 2 at runtime.
+}
+
+GAME
+{
+    //todo: this is just a copy of kingpin
+
+	switch_APPENDMAP,
+	switch_TEXT_BOX_,-fraglimit,+set fraglimit,1,1,Kill count in deathmatch to win the game
+	switch_TEXT_BOX_,-developer,+set developer,1,1,Report errors etc in console.
+	switch_TEXT_BOX_,-cheats,+set cheats,1,1,Enable cheat commands
+	switch_TEXT_BOX_,-coop,+set coop,1,1,let friends join a single player game.
+	switch_TEXT_BOX_,-deathmatch,+set deathmatch,1,1,Test map in DM mode.
+	switch_TEXT_BOX_,-teamplay,+set teamplay,0,1,Test map in teamplay mode.
+	switch_TEXT_BOX_,-logfile,+set logfile,0,1,Write console text to qconsole.log,2=append
+	switch_TEXT_BOX_,-game/mod,+set game,1,main,Load a mod.
+	switch_TEXT_BOX_,-fullscreen,+set vid_fullscreen,0,0,load game in full screen
+	switch_TEXT_BOX_,-debug_light,+set r_debug_lighting,0,1,enable lighting debug mode
+	switch_TEXT_BOX_,-timelimit,+set timelimit,0,20,Timelimit
+	switch_TEXT_BOX_,-dmflags,+set dmflags,0,784,Timelimit
+	switch_TEXT_BOX_,-verbose,+set verbose,0,1,extra debug info in console
+	switch_TEXT_BOX_,-skill,+set skill,0,1,Single player skill level,0-4(easy to hard)
+	switch_TEXT_BOX_,-gl_clear,+set gl_clear,1,1,Disable hall of mirrors effect,Used for debuging
+	switch_TEXT_BOX_,-admin,+set modadmin,1,"\ip\loopback\type\2",Automaticly join as an admin(MM only)
+	switch_TEXT_BOX_,-sky,+set sky,0,pv,Force a differnt sky
+	switch_TEXT_BOX_,-showbbox,+set r_showbbox,0,1,Show player bounding box
+	switch_TEXT_BOX_,-novis,+set r_novis,0,1,disable vis.,render the whole map
+	switch_TEXT_BOX_,-s_volume,+set s_volume,0,0.1,Set sound volume.,0.0 to 1.0
+	switch_TEXT_BOX_,-debuggraph,+set debuggraph,0,1,enable debug graph display
+	switch_TEXT_BOX_,-cl_maxfps,+set cl_maxfps,0,60,set max fps
+	switch_TEXT_BOX_,-cl_testlights,+set cl_testlights,0,1,enable dynamic lighting test (see cl_lights)
+	switch_TEXT_BOX_,-cl_testentities,+set cl_testentities,0,1,enable entity test (see cl_entities)
+	switch_TEXT_BOX_,-g_vehicle_test,+set g_vehicle_test,0,1,enable vehicle test mode.,(0 is off. 1. 2. 3 give different vehicles)
+	switch_TEXT_BOX_,-gl_lightmap,+set gl_lightmap,0,1,enable static lighting test mode,no textures. just lights(white)
+	switch_TEXT_BOX_,-gl_mode,+set gl_mode,0,6,set screen resolution
+	switch_TEXT_BOX_,-net_shownet,+set net_shownet,0,1,debug net data
+}

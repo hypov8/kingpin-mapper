@@ -1,13 +1,10 @@
 // KingpinMapper configuration by hypov8
 //
-// make sure this file exists in the same folder as KingpinMapper.exe
 // KingpinMapper.exe can be located in any folder
+// make sure this file exists in a sub folder to KingpinMapper.exe
 //
-// version 2
-// this configuration file is for default kingpin mapping tools (kpbsp.exe, kpvis.exe, kprad.exe)
-// including ACC's image2wal.exe tool for pre-build event (fix map missing colored lighting)
-// it can be adapted to run on many other command line compilers/utilities
-//
+// version 3
+//==========
 // the below settings will be used when GUI is set to 'default' compile
 // 'custom' will be generated based of these but stored in a seperate file. thus allowing 2 'profiles'
 //
@@ -15,12 +12,13 @@
 //==============================
 // newcolum (start a new colum)
 // switch_APPENDMAP, (append map name to end. not all programs suport this, some use a switch instead) (requires 1 comma)
-// switch_CHECK_BOX, <display name>, <compile switch>, <checked(0/1)>, <tooltip>, <tip n..>
-// switch_TEXT_BOX_, <display name>, <compile switch>, <checked(0/1)>, <default text>, <tooltip>, <tip n..>
+// switch_CHECK_BOX, <display name>, <compile switch>, <checked(0/1/2)>, <tooltip>, <tip n..>
+// switch_TEXT_BOX_, <display name>, <compile switch>, <checked(0/1/2)>, <default text>, <tooltip>, <tip n..>
+// note: checked=2 is greyed out
 //
 //==============================
 // for options below use eg..
-// switch_PATH_EXE_, <display name>, <compile switch>, <checked(0/1)>, <default text>, <pathname(0/1/2)>, <tooltip>, <tip n..>
+// switch_PATH_EXE_, <display name>, <compile switch>, <checked(0/1/2)>, <default text>, <pathname(0/1/2)>, <tooltip>, <tip n..>
 // Note: <pathname(0/1/2)> 0=folder, 1=folder/filename, 2=folder/text
 //================================
 // switch_PATH_EXE_ //insert kingpin.exe folder/file after switch
@@ -31,19 +29,26 @@
 // switch_PATH_VIS_ //insert kpvis.exe folder/file after switch
 // switch_PATH_RAD_ //insert kprad.exe folder/file after switch
 // switch_PATH_MAP_ //insert full .map folder+file name			//note: only <pathname(1)> works.
-// 
-// switch_PATH_TEXT //todo: 
-// todo: use bsp
 //================================
+//GUI help strings. tips for paths etc. defaults to kingpin.
+//options: GUI_KINGPIN, GUI_QUAKE1, GUI_QUAKE2, GUI_QUAKE3, GUI_HALFLIFE
+GUI_KINGPIN
 
-//gui help strings. tips for paths etc. default kingpin. optional. GUI_QUAKE, GUI_QUAKE2
-//GUI_QUAKE
+
+//================================
+// game specific notes:
+//================================
+// this configuration file is for default kingpin mapping tools (kpbsp.exe, kpvis.exe, kprad.exe)
+// including ACC's image2wal.exe tool for pre-build event (fix map missing colored lighting)
+// it can be adapted to run on many other command line compilers/utilities
+//
+//================================
 
 
 // pre-build tool.
 // generate .wal
 // can be used for other tools like re'name to lower-case, mapfix etc..
-PRE
+TOOL1_.WAL
 {
 	switch_CHECK_BOX,-NoCheck (size),-NoCheck,1,Do not check texture dimensions.,By default images whose dimensions are not a power of two above or equal to 16 are skipped.
 	switch_CHECK_BOX,-Replace (exist),-Replace,0,Always replace existing files without warning.,By default the program will prompt the user.
@@ -58,7 +63,7 @@ PRE
 	switch_PATH_MAP_,-Source (.bsp),-Source,1,,1,Use .bsp file for texture list.,-Folder needs to be set (eg: "c:/kingpin/main/textures/").,-SubFolders parameter is ignored.
 }
 
-BSP
+TOOL2_BSP
 {
 	switch_APPENDMAP,
 	switch_CHECK_BOX,-drawflag,-draw,0,Draw flags
@@ -66,12 +71,12 @@ BSP
 	switch_CHECK_BOX,-glview,-glview,0,Generate a .gl view file
 	switch_CHECK_BOX,-leaktest,-leaktest,0,Only check map for leaks
 	switch_CHECK_BOX,-onlyents,-onlyents,0,Only update entities in bsp
-	switch_CHECK_BOX,-nocsg,-nocsg,0,don't carve intersecting brushes 
+	switch_CHECK_BOX,-nocsg,-nocsg,0,don't carve intersecting brushes
 	switch_CHECK_BOX,-nodetail,-nodetail,0,don't use detail brushes
 	switch_CHECK_BOX,-nofill,-nofill,0,?
 	switch_CHECK_BOX,-nomerge,-nomerge,0,do not merge faces that share the same edge on the same plane
 	switch_CHECK_BOX,-noopt,-noopt,0,Disables optimisation
-	newcolum	
+	newcolum
 	switch_CHECK_BOX,-noprune,-noprune,0,don't prune nodes
 	switch_CHECK_BOX,-noshare,-noshare,0,don't share bsp edges
 	switch_CHECK_BOX,-nosubdiv,-nosubdiv,0,don't subdivide bsp node faces
@@ -81,14 +86,14 @@ BSP
 	switch_CHECK_BOX,-tempout,-tmpout,0,?
 	switch_CHECK_BOX,-verbose,-v,0,Display extra compile info
 	switch_CHECK_BOX,-verboseentities,-verboseentities,0,enable entity verbose mode
-	switch_TEXT_BOX_,-block,-block,0,0 0,Requires 2 values,value1= xl+xh,value2= yl+yh,range= -4 to +3,1 block= 1024 grid units,compile only 1 section of map(block) 
+	switch_TEXT_BOX_,-block,-block,0,0 0,Requires 2 values,value1= xl+xh,value2= yl+yh,range= -4 to +3,1 block= 1024 grid units,compile only 1 section of map(block)
 	switch_TEXT_BOX_,-blocks,-blocks,0,-2 -2 1 1,Requires 4 values,value1= xl,value2= yl,value3= xh,value4= yh,range= -4 to +3,1 block= 1024 grid units,compile a section of map(blocks)
-	switch_TEXT_BOX_,-microvolume,-micro,0,1.0,micro <volume>,sets the micro volume to the given float		
-	switch_TEXT_BOX_,-subdiv size,-chop,0,400,surface subdivide size.,helps r'speeds but size is limited in kingpin.
+	switch_TEXT_BOX_,-microvolume,-micro,0,1.0,micro <volume>,sets the micro volume to the given float
+	switch_TEXT_BOX_,-chop,-chop,0,400,surface subdivide size.,helps r'speeds but size is limited in kingpin.
 	switch_TEXT_BOX_,-CPU threads,-threads,0,4,limit number of CPU threads so other programs can function
 }
 
-VIS
+TOOL3_VIS
 {
 	switch_APPENDMAP,
 	switch_CHECK_BOX,-fastvis,-fast,0,Speed up compile for testing,DO NOT use for release maps
@@ -96,11 +101,11 @@ VIS
 	switch_CHECK_BOX,-tmp,-tmpin,0,?
 	switch_CHECK_BOX,-verbose,-v,0,Display extra compile info
 	switch_TEXT_BOX_,-testlevel,-level,0,0,?
-	switch_TEXT_BOX_,-CPU threads,-threads,0,4,limit number of CPU threads so other programs can function	
+	switch_TEXT_BOX_,-CPU threads,-threads,0,4,limit number of CPU threads so other programs can function
 	switch_CHECK_BOX,-showsaw,-showsaw,0,Display extra data about,'leaf portal saw into leaf'
 }
 
-LIGHT
+TOOL4_LIGHT
 {
 	switch_APPENDMAP,
 	switch_CHECK_BOX,-dump,-dump,0,patch info dump
@@ -113,10 +118,10 @@ LIGHT
 	switch_CHECK_BOX,-nominlimit,-nominlimit,1,antilights go darker than minlight
 	switch_CHECK_BOX,-nopvs,-nopvs,0,stop pvs checking
 	switch_CHECK_BOX,-nosplotchfix,-nosplotchfix,0,anti-splotch fix.,disabled for plain face lights
-	switch_CHECK_BOX,-nostopbleed,-nostopbleed,0,disabled bleeding light correction 
+	switch_CHECK_BOX,-nostopbleed,-nostopbleed,0,disabled bleeding light correction
 	switch_CHECK_BOX,-onlybounce,-onlybounce,0,only bounced light saved,usefull for debuging bounced light
 	switch_CHECK_BOX,-verbose,-v,0,more detailed output
-	newcolum	
+	newcolum
 	switch_TEXT_BOX_,-bounce,-bounce,1,4,set to %d,radiosity bounces
 	switch_TEXT_BOX_,-chop,-chop,0,128,set to %.1f,surface patch size
 	switch_TEXT_BOX_,-chopcurve,-chopcurve,0,64,value 16-256,default 32,curve surface patch size
@@ -140,7 +145,8 @@ LIGHT
 
 GAME
 {
-	switch_TEXT_BOX_,-fraglimit,+set fraglimit,1,1,Kill count in deathmatch to win the game 
+	switch_APPENDMAP,
+	switch_TEXT_BOX_,-fraglimit,+set fraglimit,1,1,Kill count in deathmatch to win the game
 	switch_TEXT_BOX_,-developer,+set developer,1,1,Report errors etc in console.
 	switch_TEXT_BOX_,-cheats,+set cheats,1,1,Enable cheat commands
 	switch_TEXT_BOX_,-coop,+set coop,1,1,let friends join a single player game.
@@ -155,6 +161,7 @@ GAME
 	switch_TEXT_BOX_,-verbose,+set verbose,0,1,extra debug info in console
 	switch_TEXT_BOX_,-skill,+set skill,0,1,Single player skill level,0-4(easy to hard)
 	switch_TEXT_BOX_,-gl_clear,+set gl_clear,1,1,Disable hall of mirrors effect,Used for debuging
+	newcolum
 	switch_TEXT_BOX_,-admin,+set modadmin,1,"\ip\loopback\type\2",Automaticly join as an admin(MM only)
 	switch_TEXT_BOX_,-sky,+set sky,0,pv,Force a differnt sky
 	switch_TEXT_BOX_,-showbbox,+set r_showbbox,0,1,Show player bounding box

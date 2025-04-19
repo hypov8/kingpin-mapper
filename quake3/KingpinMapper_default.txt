@@ -1,0 +1,234 @@
+// KingpinMapper configuration by hypov8
+//
+// KingpinMapper.exe can be located in any folder
+// make sure this file exists in a sub folder to KingpinMapper.exe
+//
+// version 3
+//==========
+// the below settings will be used when GUI is set to 'default' compile
+// 'custom' will be generated based of these but stored in a seperate file. thus allowing 2 'profiles'
+//
+//
+//==============================
+// newcolum (start a new colum)
+// switch_APPENDMAP, (append map name to end. not all programs suport this, some use a switch instead) (requires 1 comma)
+// switch_CHECK_BOX, <display name>, <compile switch>, <checked(0/1/2)>, <tooltip>, <tip n..>
+// switch_TEXT_BOX_, <display name>, <compile switch>, <checked(0/1/2)>, <default text>, <tooltip>, <tip n..>
+// note: checked=2 is greyed out
+//
+//==============================
+// for options below use eg..
+// switch_PATH_EXE_, <display name>, <compile switch>, <checked(0/1/2)>, <default text>, <pathname(0/1/2)>, <tooltip>, <tip n..>
+// Note: <pathname(0/1/2)> 0=folder, 1=folder/filename, 2=folder/text
+//================================
+// switch_PATH_EXE_ //insert kingpin.exe folder/file after switch
+// switch_PATH_BASE //insert /main folder after switch      	//note: <pathname(1)> dont work
+// switch_PATH_MOD_ //insert /mod folder  after switch       	//note: <pathname(1)> dont work
+// switch_PATH_PRE_ //insert img2wal.exe folder/file after switch
+// switch_PATH_BSP_ //insert kpbsp.exe folder/file after switch
+// switch_PATH_VIS_ //insert kpvis.exe folder/file after switch
+// switch_PATH_RAD_ //insert kprad.exe folder/file after switch
+// switch_PATH_MAP_ //insert full .map folder+file name			//note: only <pathname(1)> works.
+//================================
+//GUI help strings. tips for paths etc. defaults to kingpin. 
+//options: GUI_KINGPIN, GUI_QUAKE1, GUI_QUAKE2, GUI_QUAKE3, GUI_HALFLIFE
+GUI_QUAKE3
+
+
+//================================
+// game specific notes: 
+//================================
+// q3 config was cloned from q3map3build. by DLB
+//
+//================================
+
+
+TOOL1_BSP
+{
+    switch_APPENDMAP
+    switch_CHECK_BOX,-analyze,-analyze,0,Decompiles a bsp.
+    switch_CHECK_BOX,-custinfoparms,-custinfoparms,0,Uses custinfoparms.txt in scripts directory
+    switch_CHECK_BOX,-debuginset,-debuginset,0,Enables debug surface triangle insetting
+    switch_CHECK_BOX,-debugportals,-debugportals,0,Debug portal compilation
+    switch_CHECK_BOX,-debsurfaces,-debugsurfaces,0,Debug surface compilation
+    switch_CHECK_BOX,-draw,-draw,0,Enables real-time Debug drawing output
+    switch_CHECK_BOX,-expand,-expand,0,Expands all the brush planes and saves a new map out,to allow visual inspection of the clipping bevels
+    switch_CHECK_BOX,-fakemap,-fakemap,0,Writes out a fakemap.map.,This map will contrain a worldspawn entity and all the world brushes.
+    switch_CHECK_BOX,-flat,-flat,0,Flat forces all st co-ords in a surface to the pixel that best fits the average color of the texture.,It is of very limited utility. Flat is a sort of hack added to test existing maps with celshading
+    switch_CHECK_BOX,-flares,-flares,0,Enables flare surfaces
+    switch_CHECK_BOX,-fulldetail,-fulldetail,0,Detail brushes will be treated as normal brushes.
+    switch_CHECK_BOX,-glview,-glview,0,Writes a .gl file of the bsp tree for debugging
+    switch_CHECK_BOX,-info,-info,0,Gives you information about your map.
+    switch_CHECK_BOX,-leaktest,-leaktest,0,Only tests the map for leaks.,If a leak is found the compile is stopped
+    switch_CHECK_BOX,-meta,-meta,1,meta surface compilation
+    switch_CHECK_BOX,-micro,-micro,0,not used
+    switch_CHECK_BOX,-nocurves,-nocurves,0,Curves are not compiled.,They will not show up when the map is loaded.
+    newcolum
+    switch_CHECK_BOX,-nodetail,-nodetail,0,Detail brushes are not compiled.,They will not show up when the map is loaded.
+    switch_CHECK_BOX,-nofill,-nofill,0,not used
+    switch_CHECK_BOX,-noflares,-noflares,0,Disables flare surfaces
+    switch_CHECK_BOX,-nofog,-nofog,0,Visible surfaces that cross fog boundaries will not be split along the bound.,Note that this can cause visually incorrect fog in the map
+    switch_CHECK_BOX,-nohint,-nohint,0,Disables Hint brushes
+    switch_CHECK_BOX,-noopt,-noopt,0,not used
+    switch_CHECK_BOX,-nosubdivide,-nosubdivide,0,With this instruction, visible surfaces are not subdivided.,Subdivisions are tessellation.
+    switch_CHECK_BOX,-notjunc,-notjunc,0,T-Junctions are not fixed.,This can cause tiny slits where one surface meets halfway with another surface.
+    switch_CHECK_BOX,-nowater,-nowater,0,Water slime and lava brushes are not compiled.,They will not show up in game when the map is loaded.
+    switch_CHECK_BOX,-onlyents,-onlyents,0,Non-functional switch,Only changes the entities in a .bsp using an .ent file.
+    switch_CHECK_BOX,-onlytextures,-onlytextures,0,Non-functional switch,Only changes the texture in a .bsp file.
+    switch_CHECK_BOX,-patchmeta,-patchmeta,0,Patch meta surface compilation
+    switch_CHECK_BOX,-rename,-rename,0,SOF2 ONLY,Appends _bsp suffix to misc_model shaders
+    switch_CHECK_BOX,-skyfix,-skyfix,0,a workaround hack for the black GL_CLAMP border on skybox edges on ATI and newer nvidia video cards.,Note: unnecessary in ET or JA
+    switch_CHECK_BOX,-v,-v,0,Outputs verbose information
+    switch_CHECK_BOX,-verboseentities,-verboseentities,0,Outputs verbose information about entity sub-models
+    switch_CHECK_BOX,-showseams,-showseams,0,Shows seams on terrain.
+    newcolum
+    switch_TEXT_BOX_,-snap,-snap,0,0, Snaps the axial brush bevel plane thus reducing the clipped model plane count.
+    switch_TEXT_BOX_,-convert,-convert -format,0,,Convert between different BSP formats.,Enter game name here.
+    switch_TEXT_BOX_,-scale,-scale,0,0, Scales the BSP.
+    switch_TEXT_BOX_,-de,-de,0, ,Changes the Distance epsilon, for god only knows what reason.
+    switch_TEXT_BOX_,-mi,-mi,0,3,Sets the maximum per-surface index count
+    switch_TEXT_BOX_,-mv,-mv,0,3,Sets the maximum per-surface vertex count
+    switch_TEXT_BOX_,-ne,-ne,0, ,Changes the Normal epsilon, for god only knows what reason.
+    switch_TEXT_BOX_,-scale,-scale,0,3,Scales the bsp.
+    switch_TEXT_BOX_,-tempname,-tempname,0, ,Loads original file from temp spot in case it was renamed by the editor on the way in
+    switch_TEXT_BOX_,-texrange,-texrange,0,0,Will limit per-surface texture range to x texels
+    switch_TEXT_BOX_,-threads,-threads,0,0,Q3Map autodetects the processors, but this sets the number of threads used to compile the map. ,You should only need to set this if you are debugging something.
+    switch_TEXT_BOX_,-connect,-connect,0,host:ip,Will output logging to a remote host
+    switch_TEXT_BOX_,Logfile,>,0,bsplog.txt,Output logfile for BSP process.
+}
+
+TOOL2_VIS
+{
+    switch_APPENDMAP
+    switch_CHECK_BOX,-vis,-vis,2,Set tool to vis mode.   
+    switch_CHECK_BOX,-fast,-fast,0,This will only calculate a very loose visibility list. ,It doesn't take much time to calculate, but a lot more polygons will be drawn by the Q3 engine than necessary.
+    switch_CHECK_BOX,-hint,-hint,0,Merge all but hint portals
+    switch_CHECK_BOX,-merge,-merge,0,This merges bsp leaves before calculating the visibility list.,This will speed up the vis calculations, but mostly, more polygons will be drawn by the Q3 engine than necessary.,Might be better for _farplanedist maps.
+    switch_CHECK_BOX,-nosort,-nosort,0,This disables the sorting of portals by complexity. ,Generally, sorting will speed up visibility calculations, because portals that are more complex can use information from less complex portals.
+    switch_CHECK_BOX,-nopassage,-nopassage,0,This will disable the passage visibility algorithm.,The passage vis is faster, and a bit more tight, than the old algorithm.
+    switch_CHECK_BOX,-saveprt,-saveprt,0,This disables automatic deletion of the .prt file after creating the visibility list.
+    newcolum
+    switch_CHECK_BOX,-v,-v,0,Outputs verbose information.
+    switch_TEXT_BOX_,-threads,-threads,0,0,Q3Map autodetects the processors, but this sets the number of threads used to compile the map. ,You should only need to set this if you are debugging something.
+    switch_TEXT_BOX_,-tmpin, -tmpin,0,path,The input files will be read from a folder called "tmp".
+    switch_TEXT_BOX_,-tmpout,-tmpout,0,path,The output files will be written to a folder called "tmp".
+    switch_TEXT_BOX_,-connect,-connect,0,host:ip,Will output logging to a remote host
+}
+
+TOOL3_LIGHT
+{
+    switch_APPENDMAP
+    switch_CHECK_BOX,-light,-light,2,Set tool to light mode.
+    switch_CHECK_BOX,-border,-border,0,Creates a debugging border around the lightmap.
+    switch_CHECK_BOX,-bouncegrid,-bouncegrid,0,This enables radiosity affecting the lightgrid.
+    switch_CHECK_BOX,-cheap,-cheap,0,This stops Q3Map from calculating light on a sample after it exceeds saturation.,Enables Cheapgrid.
+    switch_CHECK_BOX,-cheapgrid,-cheapgrid,0,This is the same as cheap but it is used only in lightgrid calculations.
+    switch_CHECK_BOX,-cpma,-cpma,0,CPMA aka cpmaHack. Ganks vertex lighting so people who run picmip 22 map_overbrightbits 10,don't complain as much
+    switch_CHECK_BOX,-custinfoparms,-custinfoparms,0,Uses custinfoparms.txt in scripts directory
+    switch_CHECK_BOX,-dark,-dark,0,Dark lightmap/brush seams. Unreal-ish.
+    switch_CHECK_BOX,-debug,-debug,0,Lightmap debugging.
+    switch_CHECK_BOX,-debugaxis,-debugaxis,0,Lightmap axis debugging.,Colors the luxel with lightmap axis.
+    switch_CHECK_BOX,-debugcluster,-debugcluster,0,Luxel cluster debugging.,Color the luxel with luxel cluster.,Whatever that means.
+    switch_CHECK_BOX,-debugdeluxe,-debugdeluxe,0,Debugging for Tenebrae deluxemap static lighting.
+    switch_CHECK_BOX,-debugorigin,-debugorigin,0,Luxel origin debugging.,Colors the luxel with luxel origin.
+    switch_CHECK_BOX,-debugsurfaces,-debugsurfaces,0,Extended debug surface compilation
+    switch_CHECK_BOX,-debugunused,-debugunused,0,This colors unused lightmap pixels hot pink.
+    switch_CHECK_BOX,-deluxe,-deluxe,0,Tenebrae deluxemap static lighting algorithm.
+    switch_CHECK_BOX,-dirt,-dirt,0,Dirtmapping and ambient occlusion.
+    switch_CHECK_BOX,-dirtdebug,-dirtdebug,0,Debug mode for dirtmapping and ambient occlusion.
+    switch_CHECK_BOX,-dump,-dump,0,This dumps prefab files when used with radiosity for each bounce.
+    switch_CHECK_BOX,-export,-export,0,Run this switch by itself without any bsp or vis to ,export the lightmaps on an already compiled map.
+    switch_CHECK_BOX,-extra,-extra,0,Super is the replacement for extra and extrawide.,Extra is similar to super 2 and extrawide is similar to super 2 + filter.
+    newcolum
+    switch_CHECK_BOX,-extrawide,-extrawide,0,Super is the replacement for extra and extrawide.,Extra is similar to super 2 and extrawide is similar to super 2 + filter.
+    switch_CHECK_BOX,-fast,-fast,1,This enables light envelopes for area lights and enables light culling.,With some maps using it could speed up light calculations by 50 times or more.,,This is not a hack for light or in any way related to fast for vis,,it was simply named fast because its easier to type.,,Enables -fastbounce -fastgrid and -fast
+    switch_CHECK_BOX,-faster,-faster,0,Runs a bit faster then fast. Enables -fastbounce -fastgrid and -fast
+    switch_CHECK_BOX,-fastbounce,-fastbounce,0,This enables fast for radiosity passes.
+    switch_CHECK_BOX,-fastgrid,-fastgrid,0,This enables fast for lightgrid calculation.
+    switch_CHECK_BOX,-filter,-filter,0,Gives you a gaussian blur for shadows and 3x3 box filtering.,Filter averages a given luxel with its 3 neighbors.
+    switch_CHECK_BOX,-import,-import,0,Run this switch by itself without any bsp or vis passes to ,import the lightmaps on an already compiled map.
+    switch_CHECK_BOX,-nocollapse,-nocollapse,0,This disables identical lightmap collapsing.,Collapse compares raw lightmap a to raw lightmap b then magically merges them somehow.
+    switch_CHECK_BOX,-nogrid,-nogrid,0,This disables calculation of the light grid for dynamic model lighting.
+    switch_CHECK_BOX,-normalmap,-normalmap,0,This colors lightmaps by their facings and is good for debugging phong shading.
+    switch_CHECK_BOX,-nosurf,-nosurf,0,This disables the surface tracing of detail brushes and patches for shadow calculation.
+    switch_CHECK_BOX,-notrace,-notrace,0,No light tracing is performed. As a result no shadows will be cast.
+    switch_CHECK_BOX,-novertex,-novertex,0,This disables calculation of vertex lighting.
+    switch_CHECK_BOX,-patchshadows,-patchshadows,0,This enables the casting of shadows by patches.
+    switch_CHECK_BOX,-shade,-shade,0,This enables phong shading.
+    switch_CHECK_BOX,-sunonly,-sunonly,0,This only computes sunlight.
+    switch_CHECK_BOX,-trisoup,-trisoup,0,Convets brush faces to triangle soup.
+    switch_CHECK_BOX,-v,-v,0,Outputs verbose information.
+    switch_CHECK_BOX,-wolf,-wolf,0,Enables Wolf lighting model., Game should already be set.
+    newcolum
+    switch_TEXT_BOX_,-approx,-approx,0,0,Integer,Approximates lightmaps within a byte tolerance of x between 0 and 255.
+    switch_TEXT_BOX_,-areascale,-areascale,0,1,Float,This scales the intensity of area lights. 1 is default 2 is twice as bright.
+    switch_TEXT_BOX_,-bounce,-bounce,1,1,Integer,This enables radiosity calculation.,It will re-diffuse the light emitted onto a surface x times.,In addition it will write out the bsp after every pass so it can be cancelled without loss.
+    switch_TEXT_BOX_,-bouncescale,-bouncescale,0,1,Float,Scales the intensity for the next pass of radiosity. Default is 1.0
+    switch_TEXT_BOX_,-compensate,-compensate,0,1,Float,N.N ,default 1.0, for descaling lightmap/vertex/grid
+    switch_TEXT_BOX_,-dirtmode,-dirtmode,0,0,Integer,0 is randomized dirtmapping,1 is ordered directional dirtmapping.
+    switch_TEXT_BOX_,-dirtdepth,-dirtdepth,0,0,Integer 0-128,Controls how far luxel checks occur in world units for occluding geometry.
+    switch_TEXT_BOX_,-dirtscale,-dirtscale,0,0,Float,Scales the Opacity of the Dirtmap
+    switch_TEXT_BOX_,-dirtgain,-dirtgain,0,0,Float,Doesn't do anything atm.
+    switch_TEXT_BOX_,-gamma,-gamma,0,1,Float,Switch sets lightmap/vertex gamma value for more realistic lighting instead of using high ambient/minlight.,Default is 1.0 ,linear ramp,.,Good values are between 1.5 and 2.2
+    switch_TEXT_BOX_,-pointscale,-pointscale,0,1,Float,This scales the intensity of point lights. 1 is default and 2 is twice as bright.
+    switch_TEXT_BOX_,-samplesize,-samplesize,0,16,Float,This sets the lightmap pixel size to NxN units. The default is 16 by 16
+    switch_TEXT_BOX_,-lightmapsize,-lightmapsize,0,128,Integer power of 2,This sets the lightmap size to NxN units.
+    switch_TEXT_BOX_,-samples,-samples,0,0,Integer,This sets the sample size, different and more efficient then super.
+    switch_TEXT_BOX_,-scale,-scale,0,1,Float,Scales all lightsources like area radiosity point sky.
+    switch_TEXT_BOX_,-shadeangle,-shadeangle,0,0,Float and you should use shaders instead of this switch,This turns on phong shading and gives you the ability to specify the angle of light determined by n.,Shadeangle as a global switch is a bit dodgy though.
+    switch_TEXT_BOX_,-super,-super,1,1,Arbitrarily ordered grid supersampling of lightmaps. This replaces extra and extrawide.,This replacement does 1 N-tap supersampling rather than the weird filter that extrawide did.
+    switch_TEXT_BOX_,-threads,-threads,0,0,Integer,Q3Map autodetects the processors, but this sets the number of threads used to compile the map. ,You should only need to set this if you are debugging something.
+    switch_TEXT_BOX_,-thresh,-thresh,0,1,Float,Thresh sets the recursive triangle subdivision threshold. The default is 1.0
+    switch_TEXT_BOX_,-connect,-connect,0,host:ip,Will output logging to a remote host
+}
+
+TOOL4_KASS
+{
+    switch_APPENDMAP
+    switch_CHECK_BOX,-forcesidesvisible,-forcesidesvisible,1,This is required for q3map2, otherwise all areas will appear solid to the bots.
+    switch_CHECK_BOX,-optimize,-optimize,1,Optimizes the aas output file for best size and performance.
+    switch_CHECK_BOX,-breadthfirst,-breadthfirst,0,Breadth first bsp building.
+    switch_CHECK_BOX,-nobrushmerge,-nobrushmerge,0,Don't merge brushes.
+    switch_CHECK_BOX,-freetree,-freetree,0,Free the bsp tree.,Because you know that everyone wants to be free deep down inside.
+    switch_CHECK_BOX,-nocsg,-nocsg,0,Disables brush chopping.
+    switch_CHECK_BOX,-grapplereach,-grapplereach,0,Calculates grapple points for bots.
+    switch_CHECK_BOX,-noverbose,-noverbose,0,Disable verbose output.
+    newcolum
+    switch_TEXT_BOX_,Configuration file,-cfg,0,cfgq3.c,Allows you to specify the name of the configuration file that must reside in the same dir as q3map2build.exe.
+    switch_TEXT_BOX_,Output file,-output,0, ,Path and name for output file.
+    switch_TEXT_BOX_,-threads,-threads,0,1,BSPC still does not autodetect. Sets the number of threads used to compile the aas.
+}
+
+GAME
+{
+    switch_APPENDMAP
+    switch_CHECK_BOX,Disable bots,+set bot_enable 0,1,Game Option,This is to disable bots. Since you just compiled your map, a .aas file is probably not done yet.
+    switch_CHECK_BOX,Disable pure,+set sv_pure 0,1,Game Option,Allows files outside of pk3's to be used.
+    switch_CHECK_BOX,Vertex mode,+set r_vertexlight 1,0,Game Option,Fire up in vertex mode.
+    switch_CHECK_BOX,Fullscreen mode,+set r_fullscreen 1,0,Game Option,Fire up in windowed mode.
+    switch_CHECK_BOX,Log Console,+set logfile 3,0,Game Option,Log the console to qconsole.log.
+    switch_CHECK_BOX,Fast Sky,+set r_fastsky 0,1,Game Option,Turn on r_fastsky mode.
+    switch_CHECK_BOX,bot_developer,+set bot_developer,0,Game Option,Turn on developer mode for bots.
+    switch_CHECK_BOX,bot_debug,+set bot_debug 1,0,Game Option,Turn on debug mode for bots.
+    switch_CHECK_BOX,Developer,+set developer 1,0,Game Option,Developer mode for debugging other stuff.
+    switch_CHECK_BOX,Dedicated,+set dedicated 1,0,Game Option,Launches quake3 in dedicated server mode for a lan.
+    switch_CHECK_BOX,DebugDoor,+set g_debugdoor 1,0,Game Option,For Truecombat Only,Displays door triggers as they spawn ingame.
+    switch_CHECK_BOX,DebugItems,+set g_debugitems 1,0,Game Option,For Truecombat Only,Displays new item bounding box triggers as they spawn ingame.
+    newcolum    
+    switch_TEXT_BOX_,r_overbrightbits,+set r_overbrightbits,0,2, Turns on and off overbrightbits. Default 2.
+    switch_TEXT_BOX_,r_mapoverbrightbits,+set r_mapoverbrightbits,0,1, Turns on and off Map overbrightbits. Default 1.
+    switch_TEXT_BOX_,r_mode,+set r_mode,0,4,Game Option,Allows you to specify the resolution. 4 is 800 by 600.
+    switch_TEXT_BOX_,r_gamma,+set r_gamma,0,1,Game Option,Allows you to specify the Gamma Correction. Default is 1
+    switch_TEXT_BOX_,r_picmip,+set r_picmip,0,1,Game Option,Defines texture distance aliasing aka picmip
+    switch_TEXT_BOX_,vm_game,+set vm_game,0,2,Game Option,Use dlls or VM in game. Choices 0 or 1 or 2
+    switch_TEXT_BOX_,vm_cgame,+set vm_cgame,0,2,Game Option,Use dlls or VM in cgame. Choices 0 or 1 or 2
+    switch_TEXT_BOX_,vm_ui,+set vm_ui,0,2,Game Option,Use dlls or VM in ui. Choices 0 or 1 or 2
+    switch_TEXT_BOX_,Gametype,+set g_gametype,0,0,Game Option,Allows you to specify the game type while testing.
+    switch_TEXT_BOX_,Warmup time,+set g_wf_warmup,1,0,Game Option,Used for Weapons Factory Arena, so you don't have to wait out the intermission part.
+    switch_TEXT_BOX_,Mod dir,+set fs_game,0,,Game Option,Used to specify which mod the map is to be tested in.
+    switch_TEXT_BOX_,Base Mod dir,+set fs_basegame,0,,Game Option,Used to specify which base mod the map is to be tested in.,This is different then fs_game.
+    switch_TEXT_BOX_,com_hunkmegs,+set com_hunkmegs,0,90,Game Option,Some mods and maps require different-the-stock settings.
+    switch_TEXT_BOX_,com_zonemegs,+set com_zonemegs,0,12,Game Option,Usually used when testing bots. Stock is 12.
+    switch_TEXT_BOX_,com_soundmegs,+set com_soundmegs,0,12,Game Option,Usually used when testing sound. Stock is 8.
+    switch_TEXT_BOX_,r_start,+set r_start,0,,Game Option,Used for development in some mods.
+}
