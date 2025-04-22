@@ -1,6 +1,6 @@
 #NoTrayIcon
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_Icon=D:\_code_\icon\kp_map_compile.ico
+#AutoIt3Wrapper_Icon=kp_map_compile.ico
 #AutoIt3Wrapper_Outfile=KingpinMapper.exe
 #AutoIt3Wrapper_UseX64=n
 #AutoIt3Wrapper_Res_Fileversion=1.0.9.2
@@ -234,17 +234,16 @@ Global Enum _
 	$POP_ID_IN, _
 	$POP_ID_COMBO, _
 	$COUNT_POP
-
 ;control ID for popup
 Global $g_ahGUID_Pupup[$COUNT_POP]
 
 Global Enum _
-	$OPT_CHK, _
-	$OPT_IN, _
-	$COUNT_OPT
-;gui id array's
-Global $g_asGUI_toolTip[100][$COUNT_OPT] ;allow 100 lines
-Global $g_ahGUI_ID_options[100][$COUNT_OPT] ;allow 100 lines
+	$POPUP_HW_CBOX, _
+	$POPUP_HW_INPUT, _
+	$POPUP_TOOLTIP, _
+	$COUNT_POPUP
+;popup items
+Global $g_aUI_popupItems[100][$COUNT_POPUP] ;allow 100 lines
 
 Global $g_ahGUI_ID_MapPaths[3] ;radio buttin selection
 Global $g_ahGUI_ID_MapSave[2] ;check box save map snapshots
@@ -939,9 +938,9 @@ EndFunc
 ;==> end startup
 
 #Region ;==> popup GUI for compile options
-Func fn_Create_Element_CheckBox($IDX, $iIdx, $iXPos, $iYPos)
+Func fn_Create_Element_CheckBox($IDX, $itmIdx, $iXPos, $iYPos)
 	Local $sItemName = "ERROR", $sItemSwitch = "", $iChecked = 0
-	Local $aSwitch = StringSplit($g_asConfigUsed_custom[$IDX][$iIdx], ',');$g_asConfigFile_default
+	Local $aSwitch = StringSplit($g_asConfigUsed_custom[$IDX][$itmIdx], ',');$g_asConfigFile_default
 
 	If not @error Then
 		Local $iCount = ($aSwitch[0] > 4)? (4):($aSwitch[0])
@@ -953,22 +952,22 @@ Func fn_Create_Element_CheckBox($IDX, $iIdx, $iXPos, $iYPos)
 		if ($aSwitch[0] >= 4)  And ($aSwitch[4] <> "") Then $iChecked    = Number($aSwitch[4])
 
 		;append tool tip/s
-		$g_asGUI_toolTip[$iIdx][$OPT_CHK] = $sItemSwitch
+		$g_aUI_popupItems[$itmIdx][$POPUP_TOOLTIP] = $sItemSwitch
 		for $i = 5 to $aSwitch[0]
-			$g_asGUI_toolTip[$iIdx][$OPT_CHK] &= ","&$aSwitch[$i]
+			$g_aUI_popupItems[$itmIdx][$POPUP_TOOLTIP] &= ","&$aSwitch[$i]
 		Next
 
 		;build GUI
-		fn_CreateCheckBox_Opt($IDX, $iIdx, $sItemName, $iChecked, $iXPos, $iYPos, 0)
+		fn_CreateCheckBox_Opt($IDX, $itmIdx, $sItemName, $iChecked, $iXPos, $iYPos, 0)
 	Else
-		ConsoleWrite ("!ERROR: cant split line "&$iIdx&@CRLF)
+		ConsoleWrite ("!ERROR: cant split line "&$itmIdx&@CRLF)
 	EndIf
 EndFunc
 
-Func fn_Create_Element_TextBox($IDX, $iIdx, $iXPos, $iYPos)
+Func fn_Create_Element_TextBox($IDX, $itmIdx, $iXPos, $iYPos)
 	Local $sInputText=""
 	Local $sItemName = "ERROR", $sItemSwitch = "", $iChecked = 0, $sText= ""
-	Local $aSwitch = StringSplit($g_asConfigUsed_custom[$IDX][$iIdx], ',', 0);$g_asConfigFile_default ;StringStripWS
+	Local $aSwitch = StringSplit($g_asConfigUsed_custom[$IDX][$itmIdx], ',', 0);$g_asConfigFile_default ;StringStripWS
 
 	If Not @error Then
 		Local $iCount = ($aSwitch[0] > 4)? (4):($aSwitch[0])
@@ -984,20 +983,19 @@ Func fn_Create_Element_TextBox($IDX, $iIdx, $iXPos, $iYPos)
 		if ($aSwitch[0] >= 5)  And ($aSwitch[5] <> "") Then $sText       = $aSwitch[5]
 
 		;append tool tip/s
-		$g_asGUI_toolTip[$iIdx][$OPT_IN] = $sItemSwitch
+		$g_aUI_popupItems[$itmIdx][$POPUP_TOOLTIP] = $sItemSwitch
 		for $iI = 6 to $aSwitch[0]
-			$g_asGUI_toolTip[$iIdx][$OPT_IN] &= ","&$aSwitch[$iI]
+			$g_aUI_popupItems[$itmIdx][$POPUP_TOOLTIP] &= ","&$aSwitch[$iI]
 		Next
-		$g_asGUI_toolTip[$iIdx][$OPT_CHK] = $g_asGUI_toolTip[$iIdx][$OPT_IN]
 
 		$sInputText = $sText
 		;build GUI
-		fn_CreateCheckBox_Opt($IDX, $iIdx, $sItemName,  $iChecked, $iXPos, $iYPos, 0,       12)
-		fn_CreateInputBox_Opt($IDX, $iIdx, $sInputText, $iChecked, $iXPos, $iYPos, $iStyle, 12)
+		fn_CreateCheckBox_Opt($IDX, $itmIdx, $sItemName,  $iChecked, $iXPos, $iYPos, 0,       12)
+		fn_CreateInputBox_Opt($IDX, $itmIdx, $sInputText, $iChecked, $iXPos, $iYPos, $iStyle, 12)
 	EndIf
 EndFunc
 
-Func fn_Create_Element_TextPath($IDX, $iIdx, $iXPos, ByRef $iYPos, $IDX_PATH)
+Func fn_Create_Element_TextPath($IDX, $itmIdx, $iXPos, ByRef $iYPos, $IDX_PATH)
 	Local $iStyle=$ES_LEFT, $sFile, $sIdx, $aSwitch
 	Local $sItemName="ERROR", $sItemSwitch="", $iChecked=0, $iPathID=0, $sText=""
 	Local Const $g_asToolTip_Folder[8] = [ _
@@ -1010,7 +1008,7 @@ Func fn_Create_Element_TextPath($IDX, $iIdx, $iXPos, ByRef $iYPos, $IDX_PATH)
 				"  ( Using '\tool4.exe' path )", _ 		; $switch_PATH_RAD_
 				"  ( Using '\xyz.map' path )" ]			; $switch_PATH_MAP_
 
-	$aSwitch = StringSplit($g_asConfigUsed_custom[$IDX][$iIdx],",",0) ;$g_asConfigFile_default
+	$aSwitch = StringSplit($g_asConfigUsed_custom[$IDX][$itmIdx],",",0) ;$g_asConfigFile_default
 	If not @error Then
 		Local $iCount = ($aSwitch[0] >=4)? (4):($aSwitch[0])
 		For $i = 2 to $iCount
@@ -1024,10 +1022,11 @@ Func fn_Create_Element_TextPath($IDX, $iIdx, $iXPos, ByRef $iYPos, $IDX_PATH)
 		if ($aSwitch[0]) >= 6  And ($aSwitch[6] <> "") Then $iPathID     = Number($aSwitch[6])
 
 		;ToolTip/s. append the rest
-		$g_asGUI_toolTip[$iIdx][$OPT_IN] = $sItemSwitch & $g_asToolTip_Folder[$IDX_PATH]
+		$g_aUI_popupItems[$itmIdx][$POPUP_TOOLTIP] = $sItemSwitch & $g_asToolTip_Folder[$IDX_PATH]
 		for $iI = 7 to $aSwitch[0]
-			$g_asGUI_toolTip[$iIdx][$OPT_IN] &= ","&$aSwitch[$iI]
+			$g_aUI_popupItems[$itmIdx][$POPUP_TOOLTIP] &= ","&$aSwitch[$iI]
 		Next
+		;tooltip?
 
 		;Note: <pathname(0/1/2/3)> 0=folder, 1=folder/filename, 2=folder/text, 3=filename
 		Local $sFPath = fn_getSwitchPath($IDX_PATH, $iPathID, $sText, false, false)
@@ -1040,26 +1039,24 @@ Func fn_Create_Element_TextPath($IDX, $iIdx, $iXPos, ByRef $iYPos, $IDX_PATH)
 		ConsoleWrite("+type=" &$iPathID& " split=" &$sFPath&@CRLF)
 
 		;build GUI
-		fn_CreateCheckBox_Opt($IDX, $iIdx, $sItemName, $iChecked, $iXPos, $iYPos, 0,       12)
-		fn_CreateInputBox_Opt($IDX, $iIdx, $sFPath,    $iChecked, $iXPos, $iYPos, $iStyle, 12)
+		fn_CreateCheckBox_Opt($IDX, $itmIdx, $sItemName, $iChecked, $iXPos, $iYPos, 0,       12)
+		fn_CreateInputBox_Opt($IDX, $itmIdx, $sFPath,    $iChecked, $iXPos, $iYPos, $iStyle, 12)
 	EndIf
 
 	$iYPos+= 16
 EndFunc
 
 ; create checkboxes. $iChecked=2 is locked
-Func fn_CreateCheckBox_Opt($IDX, $iIdx, $sItemName, $iChecked, $iX, $iY, $iStyle, $off=0)
+Func fn_CreateCheckBox_Opt($IDX, $itmIdx, $sItemName, $iChecked, $iX, $iY, $iStyle, $off=0)
 	if $iChecked = 2 Then $iStyle = BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_CHECKBOX, $BS_FLAT, $iStyle) ;disable use changing checkbox
-	$g_ahGUI_ID_options[$iIdx][$OPT_CHK] = GUICtrlCreateCheckbox($sItemName, $iX, $iY, 100-$off, 16, $iStyle)
-	if $iChecked     Then GUICtrlSetState($g_ahGUI_ID_options[$iIdx][$OPT_CHK], $GUI_CHECKED)
-	;if $iChecked = 2 Then GUICtrlSetState($g_ahGUI_ID_options[$iIdx][$OPT_CHK], $GUI_DISABLE)
+	$g_aUI_popupItems[$itmIdx][$POPUP_HW_CBOX] = GUICtrlCreateCheckbox($sItemName, $iX, $iY, 100-$off, 16, $iStyle)
+	if $iChecked     Then GUICtrlSetState($g_aUI_popupItems[$itmIdx][$POPUP_HW_CBOX], $GUI_CHECKED)
 EndFunc
 ; create inputbox
-Func fn_CreateInputBox_Opt($IDX, $iIdx, $sInputText, $iChecked, $iX, $iY, $iStyle, $off=0)
+Func fn_CreateInputBox_Opt($IDX, $itmIdx, $sInputText, $iChecked, $iX, $iY, $iStyle, $off=0)
 	if $iChecked = 2 Then $iStyle = BitOR($iStyle, $ES_READONLY)
-	$g_ahGUI_ID_options[$iIdx][$OPT_IN] = GUICtrlCreateInput($sInputText, $iX+100-$off, $iY, 55+$off, 16, BitOR($iStyle, $GUI_SS_DEFAULT_INPUT)) ;, $WS_EX_STATICEDGE)
+	$g_aUI_popupItems[$itmIdx][$POPUP_HW_INPUT] = GUICtrlCreateInput($sInputText, $iX+100-$off, $iY, 55+$off, 16, BitOR($iStyle, $GUI_SS_DEFAULT_INPUT)) ;, $WS_EX_STATICEDGE)
 	GUICtrlSetLimit(-1, 250);char limit
-	;if $iChecked = 2 Then GUICtrlSetStyle($g_ahGUI_ID_options[$iIdx][$OPT_IN], )
 EndFunc
 
 Global $g_iLastPopup_ID = 0;
@@ -1103,12 +1100,12 @@ Func fn_Buld_Gui_Options($IDX)
 	$g_ahGUID_Pupup[$POP_ID_RESET] = GUICtrlCreateButton("Reset", 5, $iButtonYPos, 50,22, BitOR($GUI_DOCKWIDTH, $GUI_DOCKHEIGHT, $GUI_DOCKLEFT, $GUI_DOCKBOTTOM,-1))
 	GUICtrlSetOnEvent($g_ahGUID_Pupup[$POP_ID_RESET], "Button_opt_reset")
 
-	for $iCount = 0 to ($g_aiConfigFile_default_Count[$IDX]-1)
-		$sTmp = $g_asConfigUsed_custom[$IDX][$iCount]
-		$g_ahGUI_ID_options[$iCount][$OPT_CHK] = 0
-		$g_asGUI_toolTip[$iCount][$OPT_CHK] = ""
-		$g_ahGUI_ID_options[$iCount][$OPT_IN] = 0
-		$g_asGUI_toolTip[$iCount][$OPT_IN] = ""
+	for $itmIdx = 0 to ($g_aiConfigFile_default_Count[$IDX]-1)
+		$sTmp = $g_asConfigUsed_custom[$IDX][$itmIdx]
+		$g_aUI_popupItems[$itmIdx][$POPUP_HW_CBOX] = 0
+		$g_aUI_popupItems[$itmIdx][$POPUP_HW_INPUT] = 0
+		$g_aUI_popupItems[$itmIdx][$POPUP_TOOLTIP] = ""
+		;$g_aUI_popupItems[$iCount][] = "" ;$POPUP_HW_INPUT
 
 		If StringInStr($sTmp, "newcolum", 0, 1, 1, 8) Then ;$g_asConfigFile_default
 			if Not ($iYPos = 10) Then
@@ -1118,18 +1115,18 @@ Func fn_Buld_Gui_Options($IDX)
 				$iOffXXtra = 0
 			EndIf
 		Elseif StringInStr($sTmp, "switch_CHECK_BOX", 0, 1, 1, 16) Then ;$g_asConfigFile_default
-			fn_Create_Element_CheckBox($IDX, $iCount, $iXPos, $iYPos)
+			fn_Create_Element_CheckBox($IDX, $itmIdx, $iXPos, $iYPos)
 			$iYPos+= 16
 			$ilineNum += 1
 		ElseIf StringInStr($sTmp, "switch_TEXT_BOX_", 0, 1, 1, 16) Then
-			fn_Create_Element_TextBox($IDX, $iCount, $iXPos, $iYPos)
+			fn_Create_Element_TextBox($IDX, $itmIdx, $iXPos, $iYPos)
 			$iYPos += 16
 			$iOffXXtra = 60
 			$ilineNum += 1
 		ElseIf StringInStr($sTmp, "switch_PATH", 0, 1, 1, 11) Then
-			for $iI = 0 to $COUNT_SWITCH-1 ; UBound($g_asSwitchNames)-1
-				if StringInStr($sTmp, $g_asSwitchNames[$iI][$STR_SWITCH], 0, 1, 1, 16) Then
-					fn_Create_Element_TextPath($IDX, $iCount, $iXPos, $iYPos, $iI)
+			for $j = 0 to $COUNT_SWITCH-1 ; UBound($g_asSwitchNames)-1
+				if StringInStr($sTmp, $g_asSwitchNames[$j][$STR_SWITCH], 0, 1, 1, 16) Then
+					fn_Create_Element_TextPath($IDX, $itmIdx, $iXPos, $iYPos, $j)
 					exitloop
 				EndIf
 			next
@@ -1145,27 +1142,30 @@ Func fn_Buld_Gui_Options($IDX)
 	;resize window if there is to many elements
 	if $iXOffs > $iXMAX Or $iYOffs > $iYMAX Then
 		;dock elements b4 resize
-		for $iCount = 0 to ($g_aiConfigFile_default_Count[$IDX]-1)
-			if ($g_ahGUI_ID_options[$iCount][$OPT_CHK] > 0) Then GUICtrlSetResizing($g_ahGUI_ID_options[$iCount][$OPT_CHK], $GUI_DOCKALL)
-			if ($g_ahGUI_ID_options[$iCount][$OPT_IN]> 0) Then GUICtrlSetResizing($g_ahGUI_ID_options[$iCount][$OPT_IN], $GUI_DOCKALL)
+		for $itmIdx = 0 to ($g_aiConfigFile_default_Count[$IDX]-1)
+			if ($g_aUI_popupItems[$itmIdx][$POPUP_HW_CBOX] > 0) Then GUICtrlSetResizing($g_aUI_popupItems[$itmIdx][$POPUP_HW_CBOX], $GUI_DOCKALL)
+			if ($g_aUI_popupItems[$itmIdx][$POPUP_HW_INPUT]> 0) Then GUICtrlSetResizing($g_aUI_popupItems[$itmIdx][$POPUP_HW_INPUT], $GUI_DOCKALL)
 		Next
 		WinMove($g_ahGUID_Pupup[$POP_ID_GUI],"", Default,Default, $iXOffs+10, $iYOffs+27) ;+header
 	EndIf
 
+	local $tip, $title
 	;set tool tip last. very slow
-	for $iCount = 0 to ($g_aiConfigFile_default_Count[$IDX]-1)
-		For $i = 0 To 1
-			if $g_asGUI_toolTip[$iCount][$i] <> "" Then
-				$aTmp = StringSplit($g_asGUI_toolTip[$iCount][$i], ",")
-				if not @error and $aTmp[0] >= 2 then
-					$sTmp = $aTmp[2]
-					For $iIdx = 3 to $aTmp[0]
-						$sTmp &= @CRLF&$aTmp[$iIdx]
-					Next
-					GUICtrlSetTip($g_ahGUI_ID_options[$iCount][$i], $sTmp, $aTmp[1])
+	for $itmIdx = 0 to ($g_aiConfigFile_default_Count[$IDX]-1)
+		if $g_aUI_popupItems[$itmIdx][$POPUP_TOOLTIP] <> "" Then ;$itmIdx
+			$aTmp = StringSplit($g_aUI_popupItems[$itmIdx][$POPUP_TOOLTIP], ",") ;$itmIdx
+			if $aTmp[0] > 1 Then ;not @error and
+				$title = $aTmp[1]
+				$tip = $aTmp[2]
+				For $j = 3 to $aTmp[0]
+					$tip &= @CRLF&$aTmp[$j]
+				Next
+				GUICtrlSetTip($g_aUI_popupItems[$itmIdx][$POPUP_HW_CBOX], $tip, $title)
+				if $g_aUI_popupItems[$itmIdx][$POPUP_HW_INPUT] Then ; add tip to inputbox
+					GUICtrlSetTip($g_aUI_popupItems[$itmIdx][$POPUP_HW_INPUT], $tip, $title)
 				EndIf
 			EndIf
-		Next
+		EndIf
 	Next
 EndFunc
 #EndRegion
@@ -1242,7 +1242,7 @@ Func fn_Buld_Gui_Directories()
 		GUICtrlCreateLabel($aPathDescriptions[$iIdx], 30, $iYPos, 300, 15)
 		GUICtrlCreateButton("...", 10, $iYPos+16, 20, 18)
 		GUICtrlSetOnEvent(-1, "Button_path_"&$iIdx)
-		$g_ahGUI_ID_options[$iIdx][$OPT_IN] = GUICtrlCreateInput($g_sFilePaths[$iIdx],30, $iYPos+16, 310, 18)
+		$g_aUI_popupItems[$iIdx][$POPUP_HW_INPUT] = GUICtrlCreateInput($g_sFilePaths[$iIdx],30, $iYPos+16, 310, 18)
 		GUICtrlSetLimit(-1, 250);char limit
 		$iYPos += 40 ;36
 	Next
@@ -1266,7 +1266,7 @@ Func fn_Buld_Gui_Directories()
 		GUICtrlCreateLabel($aPathDescriptions[$iIdx], 30, $iYPos, 300, 15)
 		GUICtrlCreateButton("...", 10, $iYPos+16, 20, 18)
 		GUICtrlSetOnEvent(-1, "Button_path_"&$iIdx)
-		$g_ahGUI_ID_options[$iIdx][$OPT_IN] = GUICtrlCreateInput($g_sFilePaths[$iIdx],30, $iYPos+16, 412, 18)
+		$g_aUI_popupItems[$iIdx][$POPUP_HW_INPUT] = GUICtrlCreateInput($g_sFilePaths[$iIdx],30, $iYPos+16, 412, 18)
 		GUICtrlSetLimit(-1, 250);char limit
 		$iYPos += 40 ;36
 	Next
@@ -1284,7 +1284,7 @@ EndFunc
 Func fn_UpdateConfig_filePaths()
 	;save to internal array..
 	For $iI = 0 to 6
-		$g_sFilePaths[$iI] = GUICtrlRead($g_ahGUI_ID_options[$iI][$OPT_IN])
+		$g_sFilePaths[$iI] = GUICtrlRead($g_aUI_popupItems[$iI][$POPUP_HW_INPUT])
 		$g_sFilePaths[$iI] = StringReplace($g_sFilePaths[$iI],"\", "/") ;make all forward slash
 	Next
 
@@ -1309,7 +1309,7 @@ Func fn_GetFolderPath($IDX)
 	Local Static $sLastFolder=@ScriptDir
 	Local Const $sFNames[7] = ["game.exe","","","tool1.exe","tool2.exe","tool3.exe","tool4.exe"]
 	Local $sFileOpenDialog, $sIdx
-	Local $sImputValue = GUICtrlRead($g_ahGUI_ID_options[$IDX][$OPT_IN])
+	Local $sImputValue = GUICtrlRead($g_aUI_popupItems[$IDX][$POPUP_HW_INPUT])
 
 	ConsoleWrite("!begin1="&$sLastFolder&@CRLF)
 	ConsoleWrite("!begin2="&$sImputValue&@CRLF)
@@ -1351,7 +1351,7 @@ Func fn_GetFolderPath($IDX)
 		if ($IDX = $switch_PATH_BASE) Or ($IDX = $switch_PATH_MOD_)  Then
 			if Not (StringRight($sFileOpenDialog,1) == "/") Then $sFileOpenDialog &= "/"
 		EndIf
-		GUICtrlSetData($g_ahGUI_ID_options[$IDX][$OPT_IN], $sFileOpenDialog)
+		GUICtrlSetData($g_aUI_popupItems[$IDX][$POPUP_HW_INPUT], $sFileOpenDialog)
 		$sLastFolder = $sFileOpenDialog
 		ConsoleWrite("!begin6="&$sLastFolder&@CRLF)
 	EndIf
@@ -2129,33 +2129,33 @@ Func fn_UpdateConfig_Custom($IDX_GUI)
 		$CFG_5_INPUT, _
 		$CFG_6
 
-	For $iI = 0 to $iCount
+	For $itmIdx = 0 to $iCount
 		;duplicate the orig aray
-		$g_asConfigUsed_custom[$IDX_GUI][$iI] = $g_asConfigFile_default[$IDX_GUI][$iI]
+		$g_asConfigUsed_custom[$IDX_GUI][$itmIdx] = $g_asConfigFile_default[$IDX_GUI][$itmIdx]
 
-		$aTmp = StringSplit($g_asConfigUsed_custom[$IDX_GUI][$iI], ",")
+		$aTmp = StringSplit($g_asConfigUsed_custom[$IDX_GUI][$itmIdx], ",")
 		If Not @error Then
-			;ConsoleWrite(">#4="&$g_ahGUI_ID_options[$iI][$OPT_CHK]&" #4="&$g_ahGUI_ID_options[$iI][$OPT_IN]&@CRLF)
+			;ConsoleWrite(">#4="&$g_aUI_popupItems[$itmIdx][$POPUP_HW_CBOX]&" #4="&$g_aUI_popupItems[$itmIdx][$POPUP_HW_INPUT]&@CRLF)
 			;ConsoleWrite("val=" & $aTmp[0] &", " & $aTmp[1]&", " & $aTmp[2]&", " &$aTmp[3]&", " &$aTmp[4] &@CRLF)
 
 			;get checkbox value
 			If $aTmp[$CFG_0_Count] >= $CFG_4_CHEKED And Not ($aTmp[$CFG_4_CHEKED] = 2) Then
 				$aTmp[$CFG_4_CHEKED] = 0
-				if _IsDisabled($g_ahGUI_ID_options[$iI][$OPT_CHK]) Then
+				if _IsDisabled($g_aUI_popupItems[$itmIdx][$POPUP_HW_CBOX]) Then
 					$aTmp[$CFG_4_CHEKED] = 2 ; set checkbox value (2= checked+disabled)
-				ElseIf _IsChecked($g_ahGUI_ID_options[$iI][$OPT_CHK]) Then
+				ElseIf _IsChecked($g_aUI_popupItems[$itmIdx][$POPUP_HW_CBOX]) Then
 					$aTmp[$CFG_4_CHEKED] = 1 ; set checkbox value
 				Endif
 			EndIf
 
 			;get inputbox string (not a checkbox)
 			If $aTmp[$CFG_0_Count] >= $CFG_5_INPUT And Not ($aTmp[$CFG_4_CHEKED] = 2) _
-			And $g_ahGUI_ID_options[$iI][$OPT_IN] And StringCompare($aTmp[$CFG_1_SW_TYPE], "switch_CHECK_BOX", 0) Then
+			And $g_aUI_popupItems[$itmIdx][$POPUP_HW_INPUT] And StringCompare($aTmp[$CFG_1_SW_TYPE], "switch_CHECK_BOX", 0) Then
 				;update input
-				$aTmp[$CFG_5_INPUT] = GUICtrlRead($g_ahGUI_ID_options[$iI][$OPT_IN]) ;set inputbox value
+				$aTmp[$CFG_5_INPUT] = GUICtrlRead($g_aUI_popupItems[$itmIdx][$POPUP_HW_INPUT]) ;set inputbox value
 			EndIf
 			;update internal array
-			$g_asConfigUsed_custom[$IDX_GUI][$iI] = _ArrayToString($aTmp, ",", 1)
+			$g_asConfigUsed_custom[$IDX_GUI][$itmIdx] = _ArrayToString($aTmp, ",", 1)
 		EndIf
 	Next
 EndFunc
