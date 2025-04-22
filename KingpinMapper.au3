@@ -105,6 +105,7 @@ Global $Combo0_maps = GUICtrlCreateCombo("", 316, 180, 53, 25, BitOR($CBS_DROPDO
 GUICtrlSetData(-1, "*.map|*.bsp|*.*", "*.map")
 GUICtrlSetOnEvent(-1, "Combo0_mapsChange")
 Global $Input0_maps = GUICtrlCreateInput("", 8, 204, 261, 21, BitOR($GUI_SS_DEFAULT_INPUT,$ES_READONLY))
+GUICtrlSetLimit(-1, 250);char limit
 Global $Button6_dir_options = GUICtrlCreateButton("Directory Options", 272, 204, 97, 21)
 GUICtrlSetTip(-1, "Setup paths to game and compilers")
 GUICtrlSetOnEvent(-1, "Button6_dir_optionsClick")
@@ -309,17 +310,20 @@ Global Enum _
 	$TOOL4, _
 	$COUNT_TOOL
 Global Enum _
-	$BUILD_NAME, _
-	$BUILD_NAME_NEW, _ ;save new name
-	$BUILD_RADIO1, _
-	$BUILD_RADIO2, _
-	$BUILD_RADIO3, _
+	$GUI_BUILD_NAME, _
+	$GUI_BUILD_NAME_NEW, _ ;save new name
+	$GUI_BUILD_RADIO1, _
+	$GUI_BUILD_RADIO2, _
+	$GUI_BUILD_RADIO3, _
+	$GUI_PAUSE_NAME, _
+	$GUI_PAUSE_NAME_NEW, _ ;save new name
+	$GUI_PAUSE_ID, _
 	$COUNT_BUILD
 Global const $sSaveBuild[$COUNT_TOOL][$COUNT_BUILD] = [ _
-	["GUI_BUILD_PRE", "GUI_BUILD_TOOL1", $Radio1_none, $Radio1_default, $Radio1_custom], _
-	["GUI_BUILD_BSP", "GUI_BUILD_TOOL2", $Radio2_none, $Radio2_default, $Radio2_custom], _
-	["GUI_BUILD_VIS", "GUI_BUILD_TOOL3", $Radio3_none, $Radio3_default, $Radio3_custom], _
-	["GUI_BUILD_RAD", "GUI_BUILD_TOOL4", $Radio4_none, $Radio4_default, $Radio4_custom]]
+	["GUI_BUILD_PRE", "GUI_BUILD_TOOL1", $Radio1_none, $Radio1_default, $Radio1_custom, "GUI_PAUSE_PRE", "GUI_PAUSE_TOOL1", $Checkbox1_pause], _
+	["GUI_BUILD_BSP", "GUI_BUILD_TOOL2", $Radio2_none, $Radio2_default, $Radio2_custom, "GUI_PAUSE_BSP", "GUI_PAUSE_TOOL2", $Checkbox2_pause], _
+	["GUI_BUILD_VIS", "GUI_BUILD_TOOL3", $Radio3_none, $Radio3_default, $Radio3_custom, "GUI_PAUSE_VIS", "GUI_PAUSE_TOOL3", $Checkbox3_pause], _
+	["GUI_BUILD_RAD", "GUI_BUILD_TOOL4", $Radio4_none, $Radio4_default, $Radio4_custom, "GUI_PAUSE_RAD", "GUI_PAUSE_TOOL4", $Checkbox4_pause]]
 
 Global Enum _
 	$GUIOPT_NAME, _
@@ -332,16 +336,6 @@ Global const $sSaveGUI[5][$COUNT_GUIOPT] = [  _
 	["GUI_USE_DOS",		$Checkbox0_DOS_8_3], _
 	["GUI_BACKUP_MAP",	$Checkbox0_backupMap]]
 
-Global Enum _
-	$PAUSE_NAME, _
-	$PAUSE_NAME_NEW, _ ;save new name
-	$PAUSE_ID, _
-	$COUNT_PAUSE
-Global const $sSavePause[$COUNT_TOOL][$COUNT_PAUSE] = [ _
-	["GUI_PAUSE_PRE", "GUI_PAUSE_TOOL1", $Checkbox1_pause], _
-	["GUI_PAUSE_BSP", "GUI_PAUSE_TOOL2", $Checkbox2_pause], _
-	["GUI_PAUSE_VIS", "GUI_PAUSE_TOOL3", $Checkbox3_pause], _
-	["GUI_PAUSE_RAD", "GUI_PAUSE_TOOL4", $Checkbox4_pause]]
 
 ;store exe/game paths
 Global $g_sFilePaths[$COUNT_SWITCH] ;PATH_EXE, PATH_BASE, PATH_MOD, PATH_PRE, PATH_BSP, PATH_VIS, PATH_RAD, MAP_INDEX
@@ -460,6 +454,7 @@ Func fn_Reset_UI_Switch()
 	for $iI = 0 to 3
 		fn_SetCompileRadioTypes($iI, 1) ;1= <default>
 	Next
+	ConsoleWrite("!reset ui"&@CRLF)
 	GUICtrlSetState($Checkbox1_pause, $GUI_UNCHECKED)
 	GUICtrlSetState($Checkbox2_pause, $GUI_UNCHECKED)
 	GUICtrlSetState($Checkbox3_pause, $GUI_UNCHECKED)
@@ -611,17 +606,26 @@ Func fn_CleanupWS(byref $sConfigLine, $bCheckToolTip = False)
 	local $iCount
 	Local $aTmp = StringSplit($sConfigLine, ",")
 
-	if Not @error Then
+	if $aTmp[0] >0 Then ; Not @error Then
 		;remove space between values
 		$aTmp[1] = StringStripWS($aTmp[1], 3)
 		$iCount = $aTmp[0]
 		if $bCheckToolTip Then
 			If StringInStr($aTmp[1], "switch_CHECK", $STR_NOCASESENSEBASIC, 1, 1, 12) Then
-				if $iCount > 4 Then $iCount = 4 ;skip tooltip
+				if $iCount > 4 Then
+					$iCount = 4 ;skip tooltip
+					$aTmp[$iCount+1] = StringStripWS($aTmp[$iCount+1], 1) ;strip leading spaces
+				EndIf
 			ElseIf StringInStr($aTmp[1], "switch_TEXT_", $STR_NOCASESENSEBASIC, 1, 1, 12) Then
-				if $iCount > 5 Then $iCount = 5 ;skip tooltip
+				if $iCount > 5 Then
+					$iCount = 5 ;skip tooltip
+					$aTmp[$iCount+1] = StringStripWS($aTmp[$iCount+1], 1) ;strip leading spaces
+				EndIf
 			ElseIf StringInStr($aTmp[1], "switch_PATH_", $STR_NOCASESENSEBASIC, 1, 1, 12) Then
-				if $iCount > 6 Then $iCount = 6 ;skip tooltip
+				if $iCount > 6 Then
+					$iCount = 6 ;skip tooltip
+					$aTmp[$iCount+1] = StringStripWS($aTmp[$iCount+1], 1) ;strip leading spaces
+				EndIf
 			EndIf
 		EndIf
 
@@ -697,17 +701,19 @@ Func fn_ReadConfigFile_ExePaths()
 					$GUI_MapPathType = Number($aSplit[2])
 				ElseIf StringInStr($aSplit[1], "GUI_BUILD_", $STR_NOCASESENSEBASIC, 1, 1, 10) Then
 					;build radiobuttons
-					for $iI = 0 to 3
-						If StringCompare($aSplit[1], $sSaveBuild[$iI][$BUILD_NAME], 1) = 0 Or StringCompare($aSplit[1], $sSaveBuild[$iI][$BUILD_NAME_NEW], 1) Then
-							fn_SetCompileRadioTypes($iI, Number($aSplit[2])) ;compile type: <none, default, custom>
+					for $iI = 0 to $COUNT_TOOL -1
+						If StringCompare($aSplit[1], $sSaveBuild[$iI][$GUI_BUILD_NAME], $STR_NOCASESENSEBASIC) = 0 _ ;check old/new names
+						Or StringCompare($aSplit[1], $sSaveBuild[$iI][$GUI_BUILD_NAME_NEW], $STR_NOCASESENSEBASIC) = 0 Then
+							fn_SetCompileRadioTypes($iI, int(Number($aSplit[2]))) ;compile type: <none, default, custom>
 							ExitLoop
 						EndIf
 					Next
-				ElseIf StringInStr($aSplit[1], "GUI_PAUSE", $STR_NOCASESENSEBASIC, 1, 1, 4) Then
+				ElseIf StringInStr($aSplit[1], "GUI_PAUSE_", $STR_NOCASESENSEBASIC, 1, 1, 10) Then
 					;pause checkbox
-					for $iI = 0 to UBound($sSavePause)-1
-						If StringCompare($aSplit[1], $sSavePause[$iI][$PAUSE_NAME], 1) = 0 Or StringCompare($aSplit[1], $sSavePause[$iI][$PAUSE_NAME_NEW], 1) = 0 Then
-							GUICtrlSetState($sSavePause[$iI][$GUIOPT_ID], fn_toggleCheck(Number($aSplit[2])))
+					for $iI = 0 to $COUNT_TOOL -1
+						If StringCompare($aSplit[1], $sSaveBuild[$iI][$GUI_PAUSE_NAME], $STR_NOCASESENSEBASIC) = 0 _ ;check old/new names
+						Or StringCompare($aSplit[1], $sSaveBuild[$iI][$GUI_PAUSE_NAME_NEW], $STR_NOCASESENSEBASIC) = 0 Then
+							GUICtrlSetState($sSaveBuild[$iI][$GUI_PAUSE_ID], fn_toggleCheck(int(Number($aSplit[2]))))
 							ExitLoop
 						EndIf
 					Next
@@ -715,7 +721,7 @@ Func fn_ReadConfigFile_ExePaths()
 					;main gui checkbox
 					for $iI = 0 to UBound($sSaveGUI)-1
 						If StringCompare($aSplit[1], $sSaveGUI[$iI][$GUIOPT_NAME], 1) = 0 Then
-							GUICtrlSetState($sSaveGUI[$iI][$GUIOPT_ID], fn_toggleCheck(Number($aSplit[2])))
+							GUICtrlSetState($sSaveGUI[$iI][$GUIOPT_ID], fn_toggleCheck(int(Number($aSplit[2]))))
 							ExitLoop
 						EndIf
 					Next
@@ -733,7 +739,7 @@ Func fn_ReadConfigFile_ExePaths()
 	;if $g_sFilePaths[0] = "" then fn_Buld_Gui_Directories() ;popup select folder
 EndFunc
 
-Func fn_SetCompileRadioTypes($IDX, $iType)
+Func fn_SetCompileRadioTypes($iToolID, $iType)
 	Local const $hGUI_ID_build_opt[4] = [$Button1_option, $Button2_option, $Button3_option, $Button4_option]
 
 	If $iType > 2 Then
@@ -743,31 +749,30 @@ Func fn_SetCompileRadioTypes($IDX, $iType)
 	EndIf
 
 	;uncheck all radio buttons
-	GUICtrlSetState($sSaveBuild[$IDX][$BUILD_RADIO1], $GUI_UNCHECKED) ;<none>
-	GUICtrlSetState($sSaveBuild[$IDX][$BUILD_RADIO2], $GUI_UNCHECKED) ;<default>
-	GUICtrlSetState($sSaveBuild[$IDX][$BUILD_RADIO3], $GUI_UNCHECKED) ;<custom>
+	GUICtrlSetState($sSaveBuild[$iToolID][$GUI_BUILD_RADIO1], $GUI_UNCHECKED) ;<none>
+	GUICtrlSetState($sSaveBuild[$iToolID][$GUI_BUILD_RADIO2], $GUI_UNCHECKED) ;<default>
+	GUICtrlSetState($sSaveBuild[$iToolID][$GUI_BUILD_RADIO3], $GUI_UNCHECKED) ;<custom>
 	;check radio button
-	GUICtrlSetState($sSaveBuild[$IDX][$BUILD_RADIO1 + $iType], $GUI_CHECKED)
+	GUICtrlSetState($sSaveBuild[$iToolID][$GUI_BUILD_RADIO1 + $iType], $GUI_CHECKED)
 
-	If $iType = 2 Then
-		;activate custome compile button
-		GUICtrlSetState($hGUI_ID_build_opt[$IDX], $GUI_ENABLE)
+	If $iType = 2 Then ;activate custom compile button
+		GUICtrlSetState($hGUI_ID_build_opt[$iToolID], $GUI_ENABLE)
 	Else
-		GUICtrlSetState($hGUI_ID_build_opt[$IDX], $GUI_DISABLE)
+		GUICtrlSetState($hGUI_ID_build_opt[$iToolID], $GUI_DISABLE)
 	EndIf
 EndFunc
 
 ;read _custom.txt (generated on 1st run)
 Func fn_ReadConfigFile_Custom($sFilePath)
-    Local $iLineCount, $iIdx
+	Local $iLineCount, $iIdx
 	Local $iCount_GAME=0, $iCount_PRE=0, $iCount_BSP=0, $iCount_VIS=0, $iCount_LIGHT=0
-    Local $aTmpArray = FileReadToArray($sFilePath)
+	Local $aTmpArray = FileReadToArray($sFilePath)
 
-    If @error Then
+	If @error Then
 		if FileExists($sFilePath) Then ;only report error if file exists
 			MsgBox($MB_SYSTEMMODAL, "Warning", "Warning: Can't read file..." &@CRLF&@CRLF&$g_sFilename_cfg_custom)
 		EndIf
-    Else
+	Else
 		$iLineCount = @extended
 		;ConsoleWrite("script name=" & $sFilePath&@CRLF)
 		;_ArrayDisplay($aTmpArray)
@@ -967,6 +972,8 @@ Func fn_Create_Element_TextBox($IDX, $iIdx, $iXPos, $iYPos)
 
 	If Not @error Then
 		Local $iCount = ($aSwitch[0] > 4)? (4):($aSwitch[0])
+		Local $iStyle = $ES_LEFT
+
 		For $i = 2 to $iCount
 			$aSwitch[$i] = StringStripWS($aSwitch[$i], 3)
 		Next
@@ -985,15 +992,14 @@ Func fn_Create_Element_TextBox($IDX, $iIdx, $iXPos, $iYPos)
 
 		$sInputText = $sText
 		;build GUI
-		fn_CreateCheckBox_Opt($IDX, $iIdx, $sItemName,  $iChecked, $iXPos, $iYPos, 0)
-		fn_CreateInputBox_Opt($IDX, $iIdx, $sInputText, $iChecked, $iXPos, $iYPos, 0)
+		fn_CreateCheckBox_Opt($IDX, $iIdx, $sItemName,  $iChecked, $iXPos, $iYPos, 0,       12)
+		fn_CreateInputBox_Opt($IDX, $iIdx, $sInputText, $iChecked, $iXPos, $iYPos, $iStyle, 12)
 	EndIf
 EndFunc
 
 Func fn_Create_Element_TextPath($IDX, $iIdx, $iXPos, ByRef $iYPos, $IDX_PATH)
-	Local $iStyle=$GUI_SS_DEFAULT_INPUT, $sFile, $sIdx
+	Local $iStyle=$ES_LEFT, $sFile, $sIdx, $aSwitch
 	Local $sItemName="ERROR", $sItemSwitch="", $iChecked=0, $iPathID=0, $sText=""
-	Local $aSwitch = StringSplit($g_asConfigUsed_custom[$IDX][$iIdx],",",0) ;$g_asConfigFile_default
 	Local Const $g_asToolTip_Folder[8] = [ _
 				"  ( Using '\Game.exe' path )", _ 		; $switch_PATH_EXE_
 				"  ( Using '\base\' path )", _			; $switch_PATH_BASE
@@ -1004,6 +1010,7 @@ Func fn_Create_Element_TextPath($IDX, $iIdx, $iXPos, ByRef $iYPos, $IDX_PATH)
 				"  ( Using '\tool4.exe' path )", _ 		; $switch_PATH_RAD_
 				"  ( Using '\xyz.map' path )" ]			; $switch_PATH_MAP_
 
+	$aSwitch = StringSplit($g_asConfigUsed_custom[$IDX][$iIdx],",",0) ;$g_asConfigFile_default
 	If not @error Then
 		Local $iCount = ($aSwitch[0] >=4)? (4):($aSwitch[0])
 		For $i = 2 to $iCount
@@ -1033,24 +1040,25 @@ Func fn_Create_Element_TextPath($IDX, $iIdx, $iXPos, ByRef $iYPos, $IDX_PATH)
 		ConsoleWrite("+type=" &$iPathID& " split=" &$sFPath&@CRLF)
 
 		;build GUI
-		fn_CreateCheckBox_Opt($IDX, $iIdx, $sItemName,  $iChecked, $iXPos, $iYPos, 0)
-		fn_CreateInputBox_Opt($IDX, $iIdx, $sFPath, $iChecked, $iXPos, $iYPos, $iStyle)
+		fn_CreateCheckBox_Opt($IDX, $iIdx, $sItemName, $iChecked, $iXPos, $iYPos, 0,       12)
+		fn_CreateInputBox_Opt($IDX, $iIdx, $sFPath,    $iChecked, $iXPos, $iYPos, $iStyle, 12)
 	EndIf
 
 	$iYPos+= 16
 EndFunc
 
 ; create checkboxes. $iChecked=2 is locked
-Func fn_CreateCheckBox_Opt($IDX, $iIdx, $sItemName, $iChecked, $iX, $iY, $iStyle)
-	if $iChecked = 2 Then $iStyle = BitOR($BS_CHECKBOX, $BS_FLAT) ;disable use changing checkbox
-	$g_ahGUI_ID_options[$iIdx][$OPT_CHK] = GUICtrlCreateCheckbox($sItemName, $iX, $iY, 100, 16, $iStyle)
+Func fn_CreateCheckBox_Opt($IDX, $iIdx, $sItemName, $iChecked, $iX, $iY, $iStyle, $off=0)
+	if $iChecked = 2 Then $iStyle = BitOR($GUI_SS_DEFAULT_CHECKBOX, $BS_CHECKBOX, $BS_FLAT, $iStyle) ;disable use changing checkbox
+	$g_ahGUI_ID_options[$iIdx][$OPT_CHK] = GUICtrlCreateCheckbox($sItemName, $iX, $iY, 100-$off, 16, $iStyle)
 	if $iChecked     Then GUICtrlSetState($g_ahGUI_ID_options[$iIdx][$OPT_CHK], $GUI_CHECKED)
 	;if $iChecked = 2 Then GUICtrlSetState($g_ahGUI_ID_options[$iIdx][$OPT_CHK], $GUI_DISABLE)
 EndFunc
 ; create inputbox
-Func fn_CreateInputBox_Opt($IDX, $iIdx, $sInputText, $iChecked, $iX, $iY, $iStyle)
+Func fn_CreateInputBox_Opt($IDX, $iIdx, $sInputText, $iChecked, $iX, $iY, $iStyle, $off=0)
 	if $iChecked = 2 Then $iStyle = BitOR($iStyle, $ES_READONLY)
-	$g_ahGUI_ID_options[$iIdx][$OPT_IN] = GUICtrlCreateInput($sInputText, $iX+100, $iY, 55, 16, $iStyle)
+	$g_ahGUI_ID_options[$iIdx][$OPT_IN] = GUICtrlCreateInput($sInputText, $iX+100-$off, $iY, 55+$off, 16, BitOR($iStyle, $GUI_SS_DEFAULT_INPUT)) ;, $WS_EX_STATICEDGE)
+	GUICtrlSetLimit(-1, 250);char limit
 	;if $iChecked = 2 Then GUICtrlSetStyle($g_ahGUI_ID_options[$iIdx][$OPT_IN], )
 EndFunc
 
@@ -1235,6 +1243,7 @@ Func fn_Buld_Gui_Directories()
 		GUICtrlCreateButton("...", 10, $iYPos+16, 20, 18)
 		GUICtrlSetOnEvent(-1, "Button_path_"&$iIdx)
 		$g_ahGUI_ID_options[$iIdx][$OPT_IN] = GUICtrlCreateInput($g_sFilePaths[$iIdx],30, $iYPos+16, 310, 18)
+		GUICtrlSetLimit(-1, 250);char limit
 		$iYPos += 40 ;36
 	Next
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
@@ -1258,6 +1267,7 @@ Func fn_Buld_Gui_Directories()
 		GUICtrlCreateButton("...", 10, $iYPos+16, 20, 18)
 		GUICtrlSetOnEvent(-1, "Button_path_"&$iIdx)
 		$g_ahGUI_ID_options[$iIdx][$OPT_IN] = GUICtrlCreateInput($g_sFilePaths[$iIdx],30, $iYPos+16, 412, 18)
+		GUICtrlSetLimit(-1, 250);char limit
 		$iYPos += 40 ;36
 	Next
 
@@ -1298,7 +1308,7 @@ EndFunc
 Func fn_GetFolderPath($IDX)
 	Local Static $sLastFolder=@ScriptDir
 	Local Const $sFNames[7] = ["game.exe","","","tool1.exe","tool2.exe","tool3.exe","tool4.exe"]
-    Local $sFileOpenDialog, $sIdx
+	Local $sFileOpenDialog, $sIdx
 	Local $sImputValue = GUICtrlRead($g_ahGUI_ID_options[$IDX][$OPT_IN])
 
 	ConsoleWrite("!begin1="&$sLastFolder&@CRLF)
@@ -1334,9 +1344,9 @@ Func fn_GetFolderPath($IDX)
 	EndIf
 
 
-    If @error Then
-        ;MsgBox($MB_SYSTEMMODAL, "", "No file/folder selected.",0, $KingpinMapBuild)
-    Else
+	If @error Then
+		;MsgBox($MB_SYSTEMMODAL, "", "No file/folder selected.",0, $KingpinMapBuild)
+	Else
 		$sFileOpenDialog = StringReplace($sFileOpenDialog,"\", "/")
 		if ($IDX = $switch_PATH_BASE) Or ($IDX = $switch_PATH_MOD_)  Then
 			if Not (StringRight($sFileOpenDialog,1) == "/") Then $sFileOpenDialog &= "/"
@@ -1344,7 +1354,7 @@ Func fn_GetFolderPath($IDX)
 		GUICtrlSetData($g_ahGUI_ID_options[$IDX][$OPT_IN], $sFileOpenDialog)
 		$sLastFolder = $sFileOpenDialog
 		ConsoleWrite("!begin6="&$sLastFolder&@CRLF)
-    EndIf
+	EndIf
 EndFunc
 
 Func Button_path_0()
@@ -1646,29 +1656,31 @@ Func fn_GetSwitchValue($IDX_GUI, $iIdx, ByRef $iRetEnabled, ByRef $sRetSwitch, B
 	Return $SWITCH_0_NONE ;0
 EndFunc
 
-Func fn_buildBatch_CompileString($IDX_GUI, $IDX_PATH, $iComp)
+Func fn_buildBatch_CompileString($IDX_GUI, $IDX_PATH, $iToolID)
 	Local $bRet, $iRetEnabled, $sRetSwitch, $sRetValue, $sPath_EXE, $iAppendMap=0, $iIsCustom
 	Local $iCount_default = $g_aiConfigFile_default_Count[$IDX_GUI]-1
 
-	$g_as_CompileString[$iComp] = ""
-	if _IsChecked($sSaveBuild[$iComp][$BUILD_RADIO1]) Then Return ;disabled by user
+	$g_as_CompileString[$iToolID] = "" ;reset string
+	if _IsChecked($sSaveBuild[$iToolID][$GUI_BUILD_RADIO1]) Then Return ;disabled by user
 
 	;use windows start? low priority
-	if _IsChecked($Checkbox0_UseWinStart) Then $g_as_CompileString[$iComp] = "start /B /I /low /wait "
+	if _IsChecked($Checkbox0_UseWinStart) Then $g_as_CompileString[$iToolID] = "start /B /I /low /wait "
 
 	;add tool executable
 	$sPath_EXE = $g_sFilePaths[$IDX_PATH]
 	if _IsChecked($Checkbox0_DOS_8_3) Then $sPath_EXE = fn_convertStringTo_DOS_83($sPath_EXE) ;ok
-	$g_as_CompileString[$iComp] &= $sPath_EXE &" " ;default compile.exe
+	if $sPath_EXE <> "" Then
+		$g_as_CompileString[$iToolID] &= $sPath_EXE &" " ;default compile.exe
+	EndIf
 
 	;use settings in default config
-	$iIsCustom = _IsChecked($sSaveBuild[$iComp][$BUILD_RADIO3])
+	$iIsCustom = _IsChecked($sSaveBuild[$iToolID][$GUI_BUILD_RADIO3])
 	For $iIdx = 0 to $iCount_default
 		$bRet = fn_GetSwitchValue($IDX_GUI, $iIdx, $iRetEnabled, $sRetSwitch, $sRetValue, $iIsCustom)
 		If ($bRet = $SWITCH_3_APPENDMAP) Then
 			$iAppendMap = 1 ;switch_APPENDMAP
 		Else
-			fn_appendSwitchValue($bRet, $g_as_CompileString[$iComp], $iRetEnabled, $sRetSwitch, $sRetValue)
+			fn_appendSwitchValue($bRet, $g_as_CompileString[$iToolID], $iRetEnabled, $sRetSwitch, $sRetValue)
 		EndIf
 	Next
 
@@ -1676,9 +1688,9 @@ Func fn_buildBatch_CompileString($IDX_GUI, $IDX_PATH, $iComp)
 	if ($iAppendMap = 1) Then
 		;ConsoleWrite(">write map=" & $g_sMapSelected_full & @CRLF)
 		if _IsChecked($Checkbox0_DOS_8_3) Then
-			$g_as_CompileString[$iComp] &= fn_convertStringTo_DOS_83($g_sMapSelected_path) &$g_sMapSelected_name
+			$g_as_CompileString[$iToolID] &= fn_convertStringTo_DOS_83($g_sMapSelected_path) &$g_sMapSelected_name
 		Else
-			$g_as_CompileString[$iComp] &= $g_sMapSelected_full
+			$g_as_CompileString[$iToolID] &= $g_sMapSelected_full
 		EndIf
 	EndIf
 EndFunc
@@ -2166,7 +2178,7 @@ Func fn_SaveConfigFile_Paths()
 	FileWriteLine($hFileOpen, StringFormat("%s,%i",$g_asSwitchNames[$switch_PATH_MAP_][$STR_SAVE], $GUI_MapPathType))
 
 	;gui options
-	For $i = 0 to UBound($sSaveGUI)-1
+	For $i = 0 to 4
 		if _IsChecked($sSaveGUI[$i][$GUIOPT_ID]) Then
 			FileWriteLine($hFileOpen, StringFormat("%s,1", $sSaveGUI[$i][$GUIOPT_NAME]))
 		Else
@@ -2175,22 +2187,22 @@ Func fn_SaveConfigFile_Paths()
 	Next
 
 	;tool pause
-	For $i = 0 to UBound($sSavePause)-1
-		if _IsChecked($sSavePause[$i][$GUIOPT_ID]) Then
-			FileWriteLine($hFileOpen, StringFormat("%s,1", $sSavePause[$i][$PAUSE_NAME_NEW]))
+	For $i = 0 to $COUNT_TOOL -1
+		if _IsChecked($sSaveBuild[$i][$GUI_PAUSE_ID]) Then
+			FileWriteLine($hFileOpen, StringFormat("%s,1", $sSaveBuild[$i][$GUI_PAUSE_NAME_NEW]))
 		Else
-			FileWriteLine($hFileOpen, StringFormat("%s,0", $sSavePause[$i][$PAUSE_NAME_NEW]))
+			FileWriteLine($hFileOpen, StringFormat("%s,0", $sSaveBuild[$i][$GUI_PAUSE_NAME_NEW]))
 		EndIf
 	Next
 
 	;build radio button <none, default, custom>
 	For $i = 0 to $COUNT_TOOL-1
-		if _IsChecked($sSaveBuild[$i][$BUILD_RADIO1]) Then
-			FileWriteLine($hFileOpen, StringFormat("%s,0", $sSaveBuild[$i][$BUILD_NAME_NEW])) ;none
-		ElseIf  _IsChecked($sSaveBuild[$i][$BUILD_RADIO2]) Then
-			FileWriteLine($hFileOpen, StringFormat("%s,1", $sSaveBuild[$i][$BUILD_NAME_NEW])) ;default
+		if _IsChecked($sSaveBuild[$i][$GUI_BUILD_RADIO1]) Then
+			FileWriteLine($hFileOpen, StringFormat("%s,0", $sSaveBuild[$i][$GUI_BUILD_NAME_NEW])) ;none
+		ElseIf  _IsChecked($sSaveBuild[$i][$GUI_BUILD_RADIO2]) Then
+			FileWriteLine($hFileOpen, StringFormat("%s,1", $sSaveBuild[$i][$GUI_BUILD_NAME_NEW])) ;default
 		Else
-			FileWriteLine($hFileOpen, StringFormat("%s,2", $sSaveBuild[$i][$BUILD_NAME_NEW])) ;custom
+			FileWriteLine($hFileOpen, StringFormat("%s,2", $sSaveBuild[$i][$GUI_BUILD_NAME_NEW])) ;custom
 		EndIf
 	Next
 

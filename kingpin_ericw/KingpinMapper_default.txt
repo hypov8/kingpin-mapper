@@ -1,0 +1,232 @@
+// KingpinMapper configuration by hypov8
+//
+// KingpinMapper.exe can be located in any folder
+// make sure this file exists in a sub folder to KingpinMapper.exe
+//
+// version 3
+//==========
+// the below settings will be used when GUI is set to 'default' compile
+// 'custom' will be generated based of these but stored in a seperate file. thus allowing 2 'profiles'
+//
+//
+//==============================
+// newcolum (start a new colum)
+// switch_APPENDMAP, (append map name to end. not all programs suport this, some use a switch instead) (requires 1 comma)
+// switch_CHECK_BOX, <display name>, <compile switch>, <checked(0/1/2)>, <tooltip>, <tip n..>
+// switch_TEXT_BOX_, <display name>, <compile switch>, <checked(0/1/2)>, <default text>, <tooltip>, <tip n..>
+// note: checked=2 is greyed out
+//
+//==============================
+// for options below use eg..
+// switch_PATH_EXE_, <display name>, <compile switch>, <checked(0/1/2)>, <default text>, <pathname(0/1/2)>, <tooltip>, <tip n..>
+// Note: <pathname(0/1/2)> 0=folder, 1=folder/filename, 2=folder/text
+//================================
+// switch_PATH_EXE_ //insert kingpin.exe folder/file after switch
+// switch_PATH_BASE //insert /main folder after switch      	//note: <pathname(1)> dont work
+// switch_PATH_MOD_ //insert /mod folder  after switch       	//note: <pathname(1)> dont work
+// switch_PATH_PRE_ //insert img2wal.exe folder/file after switch
+// switch_PATH_BSP_ //insert kpbsp.exe folder/file after switch
+// switch_PATH_VIS_ //insert kpvis.exe folder/file after switch
+// switch_PATH_RAD_ //insert kprad.exe folder/file after switch
+// switch_PATH_MAP_ //insert full .map folder+file name			//note: only <pathname(1)> works.
+//================================
+//GUI help strings. tips for paths etc. defaults to kingpin.
+//options: GUI_KINGPIN, GUI_QUAKE1, GUI_QUAKE2, GUI_QUAKE3
+GUI_KINGPIN
+
+
+//================================
+// game specific notes:
+//================================
+// this configuration file is for kingpin, ericw-tools (bsputil.exe, qbsp.exe, vis.exe, light.exe)
+// it can be adapted to run on many other command line compilers/utilities
+//
+//================================
+
+
+
+// pre-build tool.
+TOOL1_BSP-UTIL
+{
+	switch_APPENDMAP,
+	switch_TEXT_BOX_,-scale,       --scale,            0, 1 1 1 ,Scale the .bsp by the given scale factors.
+	switch_TEXT_BOX_,-replace-ent, --replace-entities, 0, file  ,Replaces the .bsp’s entity lump with the contents of ENTFILE.
+	switch_TEXT_BOX_,-convert,     --convert,          0, q2bsp ,Convert the input .bsp to one of the given formats:,bsp29,bsp2,bsp2rmq,hexen2,hexen2,bsp2,hexen2,bsp2rmq,hl,q2bsp,qbism 	
+	switch_CHECK_BOX,-extract-ent, --extract-entities, 0     ,Extract the entity data from BSP FILE and create a plain text .ent file.
+	switch_CHECK_BOX,-extract-tex, --extract-textures, 1     ,Extract the texture data from BSP FILE and create a Quake WAD file.,
+	switch_TEXT_BOX_,-replace-tex, --replace-textures, 0, wad,Replace any textures in BSPFILE with updated versions from WADFILE. 	
+	switch_CHECK_BOX,-check,       --check,            0     ,Run a set of tests on BSP FILE to check that all internal data structures are self-consistent.,Currently the tests are very basic.,Not all warnings will result in errors from all versions of the Quake engine.,Used for development of the qbsp.exe tool and check that a "clean" bsp file is generated.
+	switch_CHECK_BOX,-modelinfo,   --modelinfo,        0     ,Print some information on all models in the .bsp.
+	//--findfaces x y z nx ny nz
+	//--findleaf x y z
+	//--settexinfo facenum texinfonum
+	switch_CHECK_BOX,-decompile,            --decompile,                0       ,Decompile BSPFILE to BSPFILE.decompile.map. 	
+	switch_CHECK_BOX,-decomp-geo,           --decompile-geomonly,       0       ,Decompile BSPFILE to BSPFILE.decompile.map without texturing.
+	switch_CHECK_BOX,-decomp-ignore-brushes,--decompile-ignore-brushes, 0       ,Decompile BSPFILE to BSPFILE.decompile.map without using the Q2 brushes lump.
+	switch_TEXT_BOX_,-decomp-hull#,         --decompile-hull,           0, 0    ,Decompile only the given hull number to BSPFILE.decompile.hullN.map
+	switch_TEXT_BOX_,-extract-lump,         --extract-bspx-lump,        0, lump ,Write the BSPX lump LUMPNAME to OUTFILENAME.
+	switch_TEXT_BOX_,-insert-lump,          --insert-bspx-lump,         0, file ,Read INFILENAME and insert it as a BSPX lump LUMPNAME in BSPFILE.
+	switch_TEXT_BOX_,-remove-lump,          --remove-bspx-lump,         0, file ,Removes LUMPNAME from BSPFILE.
+	switch_CHECK_BOX,-svg,                  --svg,                      0       ,Writes a top-down SVG rendering of BSPFILE.	
+}
+
+TOOL2_BSP
+{
+	switch_APPENDMAP,
+	switch_CHECK_BOX,-contenthack,   -contenthack,   0,Hack to fix leaks through solids.,Causes missing faces in some cases so disabled by default.
+	switch_CHECK_BOX,-expand,        -expand,        0,option to dump the hull expansion to a "expanded.map".From q3map
+	switch_CHECK_BOX,-forcegoodtree, -forcegoodtree, 0,Force use of expensive processing for SolidBSP stage.Often results in a more optimal BSP file in terms of file size,at the expense of extra processing time.
+	switch_CHECK_BOX,-forceprt1,     -forceprt1,     1,Option to generate a .prt file that GTKRadiant.,When func_detail is in use you normally get a PRT2 file that ptrview can't load.
+	switch_CHECK_BOX,-leaktest,      -leaktest,      0,Makes it a compile error if a leak is detected.
+	switch_CHECK_BOX,-noallowupgrade,-noallowupgrade,1,Opt out of allow formats to “upgrade” to compatible extended formats when a limit is exceeded (e.g. Quake BSP to BSP2, or Quake 2 BSP to Qbism BSP). Enabled by default.
+	switch_CHECK_BOX,-noChop,        -nochop,        0,Do not chop intersecting brushes.	
+	switch_CHECK_BOX,-noClip,        -noclip,        0,Doesn't build clip hulls
+	switch_CHECK_BOX,-noDetail,      -nodetail,      0,Convert func_detail to structural
+	switch_CHECK_BOX,-nofFill,       -nofill,        0,Doesn't perform outside filling
+	switch_CHECK_BOX,-noLog,         -nolog,         1,Don’t write log files.
+	switch_CHECK_BOX,-noMerge,       -nomerge,       0,Don’t perform face merging. 	
+	switch_CHECK_BOX,-noOldaxis,     -nooldaxis,     0,Use alternate texture alignment algorithm.The default is to use the original QBSP texture alignment algorithm,which required the -oldaxis switch in tyrutils-ericw v0.15.1 and earlier.
+	switch_CHECK_BOX,-noSkip,        -noskip,        0,Doesn't remove faces using the 'skip' texture
+	switch_CHECK_BOX,-noTex,         -notex,         0,Write only placeholder textures.,To depend upon replacements.
+	switch_CHECK_BOX,-noTjunc,       -notjunc,       0,Don’t attempt to fix T-junctions.,This is only for engines or formats that prefer micro-cracks over degenerate triangles.,If you don’t know what that means, don’t set this.	
+	switch_CHECK_BOX,-noTranswater,  -notranswater,  0,Computes portal information for opaque water
+	switch_CHECK_BOX,-noVerbose,     -noverbose,     1,Print out almost no information at all
+	newcolum
+	switch_CHECK_BOX,-objexport,    -objexport,    0,Export the map file as an .OBJ model after the CSG phase
+	switch_CHECK_BOX,-oldrottex,    -oldrottex,    0,Use old method of texturing rotate_ brushes,where the mapper aligns textures for the object at (0 0 0).
+	switch_CHECK_BOX,-omitdetail,   -omitdetail,   0,Detail brushes are omitted from the compile.
+	switch_CHECK_BOX,-onlyents,     -onlyents,     0,Only updates .map entities
+	switch_CHECK_BOX,-splitsky,     -splitsky,     0,Doesn't combine sky faces into one large face
+	switch_CHECK_BOX,-splitspecial, -splitspecial, 0,Doesn't combine sky and water faces into one large face
+	switch_CHECK_BOX,-splitturb,    -splitturb,    0,Doesn't combine water faces into one large face
+	switch_CHECK_BOX,-transsky,     -transsky,     0,Computes portal information for transparent sky
+	switch_CHECK_BOX,-verbose,      -verbose,      0,Print out more .map information
+	switch_CHECK_BOX,-wrbrushes,    -wrbrushes,    0,(bspx) Includes a list of brushes for brush-based collision.
+	switch_CHECK_BOX,-wrbrushesonly,-wrbrushesonly,0,"-wrbrushes" combined with "-noclip" argument.
+	newcolum
+	switch_CHECK_BOX,-debugleak,  -debugleak,  0          ,Write more diagnostic files for debugging leaks. 	
+	switch_CHECK_BOX,-debugleafs,-debugleafvolumes  ,Save bsp leaf volumes after BrushBSP to a .map, for visualizing BSP splits.	
+	switch_TEXT_BOX_,-debugexpand,-debugexpand,0,      0  ,Write expanded hull .map for debugging/inspecting hulls/brush bevelling.,[single hull index] or [mins_x mins_y mins_z maxs_x maxs_y maxs_z]
+	switch_TEXT_BOX_,-aliasdef,   -aliasdef,   0,ent.def  ,Adds alias definition files, which can transform entities in the .map into other entities.
+	switch_TEXT_BOX_,-convert,    -convert,    0,  quake  ,Convert a .MAP to a different .MAP format.,Valid types:,quake,quake2,valve,bp (brush primitives).,Conversions to "quake" or "quake2" format may cause texture alignment issues.,The converted map is saved to <source map name>-<fmt>.map.
+	switch_TEXT_BOX_,-epsilon,    -epsilon,    0, 0.0001  ,Customize ON_EPSILON,default=0.0001
+	switch_TEXT_BOX_,-leakdist,   -leakdist,   0,      2  ,Space between leakfile points,default=2
+	switch_TEXT_BOX_,-maxnodesize,-maxnodesize,0,   1024  ,Switch to the cheap spatial subdivion bsp heuristic when,splitting nodes of this size (in any dimension).,Speed up processing times on large maps.,From txqbsp-xt, thanks rebb.,default=1024,disable=0
+	switch_TEXT_BOX_,-subdivide,  -subdivide,  1,    418  ,Use different texture subdivision (default 240).,Lower values will harm framerates.,Higher values may not be supported.,DP+FTEQW+QSS support up to 4080 (unless lightmap scaling is in use), but such values will cause other engines to crash-to-console.,Use zero to specify no subdivision.
+	switch_TEXT_BOX_,-threads,    -threads,    0,      4  ,Set number of threads to use. By default, qbsp will attempt to use all available hardware threads.	
+	switch_TEXT_BOX_,-worldextent,-worldextent,0,   4048  ,Option for large maps,deault=65536 ( meaning +/-65536 units)
+	switch_PATH_EXE_,-wadpath,    -wadpath,    0,  wads/,2,Use /Quake/wads/,Search this directory for wad files (default is cwd)
+	switch_PATH_BASE,-xwadpath,   -xwadpath,   0,  wads/,2,Use Quake/id1/wads/,Search this directory for wad files (mips will NOT be embedded, avoiding texture license issues)
+	//
+	switch_PATH_BASE,-basedir,    -basedir,    2,       ,0,REQUIRED for finding assets.
+	switch_PATH_MOD_,-gamedir,    -gamedir,    0,       ,0,Load additional assets from mod path
+	switch_CHECK_BOX,-q2bsp,      -q2bsp,      2          ,Create the output BSP file in 2PSB format.,This is an earlier version of the BSP2 format.,Supported by the RMQ engine(known as the BSP2rmq or RMQe bsp format).,original BSP 29 format.
+}
+
+TOOL3_VIS
+{
+	switch_APPENDMAP,
+	switch_CHECK_BOX,-fast,          -fast,          0,Skip detailed calculations and calculate a very loose set of PVS data.,Sometimes useful for a quick test while developing a map.
+	switch_CHECK_BOX,-noautoclean,   -noautoclean,   0,Don’t remove extra files on successful completion. Default is to remove them.
+	switch_CHECK_BOX,-nodefaultpaths,-nodefaultpaths,0,Opt out of -defaultpaths.,Whether the compiler should attempt to automatically derive game/base paths for games that support it.,Enabled by default. 	
+	switch_CHECK_BOX,-nolog,         -nolog,         0,Don’t write log files.	
+	switch_CHECK_BOX,-nostate,       -nostate,       0,Ignore saved state files, for forced re-runs.
+	switch_CHECK_BOX,-noverbose,     -noverbose,     0,Suppress non-important messages (equivalent to -nopercent -nostat -noprogress)	
+	switch_CHECK_BOX,-phsonly,       -phsonly,       0,Re-calculate the PHS of a Quake II BSP without touching the PVS.	
+	switch_CHECK_BOX,-verbose,       -verbose,       0,Verbose output.
+	switch_CHECK_BOX,-vv,            -vv,            0,Very verbose output.
+	newcolum	
+	switch_TEXT_BOX_,-level,         -level,         0,4,   Select a test level from 0 to 4 for detailed visibility calculations.,Lower levels are not necessarily faster in in all cases.,It is not recommended that you change the default level unless you are experiencing problems.,Default 4.
+	switch_TEXT_BOX_,-lowpriority,   -lowpriority,   0,0,   Run in a lower priority, to free up headroom for other processes.	
+	switch_TEXT_BOX_,-visdist,       -visdist,       0,1024,Allow culling of areas further than n units.
+	switch_TEXT_BOX_,-threads,       -threads,       0,4,   Set number of threads explicitly.,By default vis will attempt to detect the number of CPUs/cores available.
+	//
+	switch_PATH_BASE,-basedir,       -basedir,       2,,0,  REQUIRED for finding assets.
+	switch_PATH_MOD_,-gamedir,       -gamedir,       0,,0,  Load additional assets from mod path
+}
+
+TOOL4_LIGHT
+{
+	switch_APPENDMAP,
+	switch_CHECK_BOX,-addmin,         -addmin,           1,Changes the behaviour of minlight.,Additive Light.,Instead of increasing low light levels to the global minimum,add the global minimum light level to all style 0 lightmaps.,This may help reducing the sometimes flat/uniform minlight effect.
+	switch_CHECK_BOX,-bounce,         -bounce,           1,Enable bounce lighting
+	switch_CHECK_BOX,-bounce-debug,   -bouncedebug,      0,Write bounced lighting only to the lightmap for debugging / previewing -bounce.
+	switch_CHECK_BOX,-bounce-debug-li,-bouncelightsdebug,0,Only save bounced emitters lighting to the lightmap.	
+	switch_CHECK_BOX,-debugoccluded,  -debugoccluded,    0,Save luxel occlusion data to lightmap.
+	switch_CHECK_BOX,-debugneighbours,-debugneighbours,  0,Save neighboring faces data to lightmap (requires -debugface).
+	switch_CHECK_BOX,-debugmottle,    -debugmottle,      0,Save mottle pattern (used by Q2 minlight, when opted in with _minlight_mottle) to lightmap.
+	switch_CHECK_BOX,-dirt,           -dirt,             0,Ambient occlusion
+	switch_CHECK_BOX,-dirt-debug,     -dirtdebug,        0,Implies "-dirt" and renders just the dirtmap against a fullbright background,ignoring all lights in the map.,Useful for previewing and turning the dirt settings.
+	switch_CHECK_BOX,-extra,          -extra,            0,Calculate extra samples (2x2) and average the results for smoother shadows.
+	switch_CHECK_BOX,-extra4,         -extra4,           1,Calculate even more samples (4x4) and average the results for smoother shadows.
+	switch_CHECK_BOX,-highlightseams, -highlightseams,   0,?
+	newcolum	
+	switch_CHECK_BOX,-lit,           -lit,           0,Force generation of a .lit file.,Even if your map does not have any coloured lights.,By default,light will automatically generate the .lit file when needed.,Enable prevents errors from outdated file.
+	switch_CHECK_BOX,-lit2,          -lit2,          0,Force generation of a .lit2 file,even if your map does not have any coloured lights.
+	switch_CHECK_BOX,-lux,           -lux,           0,Generate a .lux file storing average incoming light directions for surfaces.,Usable by FTEQW with "r_deluxemapping 1"
+	switch_CHECK_BOX,-nodefaultpaths,-nodefaultpaths,0,Opt out of -defaultpaths.,Whether the compiler should attempt to automatically derive game/base paths for games that support it.,Enabled by default. 	
+	switch_CHECK_BOX,-nolights,      -nolights,      0,Ignore light entities (only sunlight/minlight).	
+	switch_CHECK_BOX,-nolog,         -nolog,         0,Don’t write log files.
+	switch_CHECK_BOX,-novanilla,     -novanilla,     0,Fallback scaled lighting will be omitted.,Standard grey lighting will be ommitted if there are coloured lights.,Implies "-bspxlit". "-lit" will no longer be implied by the presence of coloured lights.
+	switch_CHECK_BOX,-noverbose,     -noverbose,     0,Suppress non-important messages (equivalent to -nopercent -nostat -noprogress)	
+	switch_CHECK_BOX,-novisapprox,   -novisapprox,   0,Disable approximate visibility culling of lights,which has a small chance of introducing artifacts where lights cut off too soon.
+	switch_CHECK_BOX,-onlyents,      -onlyents,      0,Updates the entities lump in the bsp.,You should run this after running qbsp with -onlyents,If your map uses any switchable lights.,All this does is assign style numbers to each switchable light.
+	switch_CHECK_BOX,-phongdebug,    -phongdebug,    0,Write normals to lit file for debugging phong shading.
+	switch_CHECK_BOX,-phongdebug_obj,-phongdebug_obj,0,Save map as .obj with phonged normals	
+	switch_CHECK_BOX,-surflight_dump,-surflight_dump,0,Saves the lights generated by surfacelights to a "mapname-surflights.map" file.
+	newcolum
+	switch_TEXT_BOX_,-dirt-depth,      -dirtdepth,          0,  128,Controls the distance tested for ambient occlusion. In quake units.,Default=128
+	switch_TEXT_BOX_,-dirt-gain,       -dirtgain,           0,  1.0,Controls the intensity of the dirt with an exponential scale.,Default=1.0
+	switch_TEXT_BOX_,-dirt-scale,      -dirtscale,          0,  1.0,Controls the intensity of the dirt with a simple multiplier.,Default=1.0	
+	switch_TEXT_BOX_,-bounce-scale,    -bouncescale,        1,  1.0,Scale of bounce lighting.,default 1.0
+	switch_TEXT_BOX_,-gamma,           -gamma,              0,  1.0,gamma adjustment of the final lightmap
+	switch_TEXT_BOX_,-gate,            -gate,               0,0.001,Set a minimum light level,below which can be considered zero brightness.,This can dramatically speed up processing when there are large numbers of lights with inverse or inverse square falloff.,In most cases values less than 1.0,will cause no discernable visual differences.,Default 0.001.
+	switch_TEXT_BOX_,-lmscale,         -lmscale,            0,  1.0,Equivelent to "_lightmap_scale" worldspawn key.
+	switch_TEXT_BOX_,-soft,            -soft,               1,    1,Blend neighbour lightmap pixels to an average for softer shadows.,a value of 1 results in averaging a 3x3 square,a value of 2 implies a 5x5 square.,An empty value will be the level of oversampling requested.,-extra implies a value of 2,-extra4 implies a value of 3.
+	switch_TEXT_BOX_,-sunsamples,      -sunsamples,         0,  100,Set the number of samples to use for "_sunlight_penumbra" and "_sunlight2",sunlight2 may use more or less because of how the suns are set up in a sphere.,Default 100.
+	switch_TEXT_BOX_,-surflight_subdiv,-surflight_subdivide,0,  128,Configure spacing of all surface lights.,Default 128 units.,Minimum setting: 64 / max 2048.
+	switch_TEXT_BOX_,-visapprox,       -visapprox,          0, auto,Change approximate visibility algorithm.,auto (choose default based on format),vis(use BSP vis data (slow but precise)).,rays(use sphere culling with fired rays (fast but may miss faces).),none(Disable approximate visibility culling of lights.)
+	switch_TEXT_BOX_,-lowpriority,     -lowpriority,        0,    0,Run in a lower priority, to free up headroom for other processes.	
+	switch_TEXT_BOX_,-threads,         -threads,            0,    4,Set number of threads explicitly.,By default light will attempt to detect the number of CPUs/cores available.
+ 	//
+	switch_PATH_BASE,-basedir,         -basedir,            2,   ,0,REQUIRED for finding assets.
+	switch_PATH_MOD_,-gamedir,         -gamedir,            0,   ,0,Load additional assets from mod path
+}
+
+GAME
+{
+	switch_APPENDMAP,
+	switch_TEXT_BOX_,-fraglimit,  +set fraglimit,       1,1,   Kill count in deathmatch to win the game
+	switch_TEXT_BOX_,-developer,  +set developer,       1,1,   Report errors etc in console.
+	switch_TEXT_BOX_,-cheats,     +set cheats,          1,1,   Enable cheat commands
+	switch_TEXT_BOX_,-coop,       +set coop,            1,1,   let friends join a single player game.
+	switch_TEXT_BOX_,-deathmatch, +set deathmatch,      1,1,   Test map in DM mode.
+	switch_TEXT_BOX_,-teamplay,   +set teamplay,        0,1,   Test map in teamplay mode.
+	switch_TEXT_BOX_,-logfile,    +set logfile,         0,1,   Write console text to qconsole.log,2=append
+	switch_TEXT_BOX_,-game/mod,   +set game,            1,main,Load a mod.
+	switch_TEXT_BOX_,-fullscreen, +set vid_fullscreen,  0,0,   load game in full screen
+	switch_TEXT_BOX_,-debug_light,+set r_debug_lighting,0,1,   enable lighting debug mode
+	switch_TEXT_BOX_,-timelimit,  +set timelimit,       0,20,  Timelimit
+	switch_TEXT_BOX_,-dmflags,    +set dmflags,         0,784, Timelimit
+	switch_TEXT_BOX_,-verbose,    +set verbose,         0,1,   extra debug info in console
+	switch_TEXT_BOX_,-skill,      +set skill,           0,1,   Single player skill level,0-4(easy to hard)
+	switch_TEXT_BOX_,-in_mouse,   +set in_mouse,        0,2,   Single player skill level,0-4(easy to hard)
+	switch_TEXT_BOX_,-gl_clear,   +set gl_clear,        1,1,   Disable hall of mirrors effect,Used for debuging
+	newcolum
+	switch_TEXT_BOX_,-admin,          +set modadmin,       1,"\ip\loopback\type\2",  Automaticly join as an admin(MM only)
+	switch_TEXT_BOX_,-sky,            +set sky,            0,pv,                     Force a differnt sky
+	switch_TEXT_BOX_,-showbbox,       +set r_showbbox,     0,1,                      Show player bounding box
+	switch_TEXT_BOX_,-novis,          +set r_novis,        0,1,                      disable vis.,render the whole map
+	switch_TEXT_BOX_,-s_volume,       +set s_volume,       0,0.1,                    Set sound volume.,0.0 to 1.0
+	switch_TEXT_BOX_,-debuggraph,     +set debuggraph,     0,1,                      enable debug graph display
+	switch_TEXT_BOX_,-cl_maxfps,      +set cl_maxfps,      0,60,                     set max fps
+	switch_TEXT_BOX_,-cl_testlights,  +set cl_testlights,  0,1,                      enable dynamic lighting test (see cl_lights)
+	switch_TEXT_BOX_,-cl_testentities,+set cl_testentities,0,1,                      enable entity test (see cl_entities)
+	switch_TEXT_BOX_,-g_vehicle_test, +set g_vehicle_test, 0,1,                      enable vehicle test mode.,(0 is off. 1. 2. 3 give different vehicles)
+	switch_TEXT_BOX_,-gl_lightmap,    +set gl_lightmap,    0,1,                      enable static lighting test mode,no textures. just lights(white)
+	switch_TEXT_BOX_,-gl_mode,        +set gl_mode,        0,6,                      set screen resolution
+	switch_TEXT_BOX_,-net_shownet,    +set net_shownet,    0,1,                      debug net data
+	switch_TEXT_BOX_,-r_hires,        +set r_hires,        0,1,                      use high res images	
+	switch_TEXT_BOX_,-showfps,        +set showfps,        0,1,                      show fps		
+	switch_TEXT_BOX_,-skin,           +set skin,           0,"male_thug/001 001 001",Deathmatch player skin.
+}
