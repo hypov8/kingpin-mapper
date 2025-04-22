@@ -64,22 +64,7 @@ TOOL1_.WAL
 TOOL2_BSP
 {
 	switch_APPENDMAP,
-	switch_CHECK_BOX,-bsp,    -bsp,    2,           enable bsp pass, requires a .map file as input	
-	switch_PATH_MOD_,-moddir, -moddir, 1,comp,   0, [path] Set a mod directory. Default is parent dir of map file.
-	switch_PATH_BASE,-basedir,-basedir,2,main,   0, [path] Set the directory for assets not in moddir. Default is moddir.
-	switch_PATH_EXE_,-gamedir,-gamedir,0,kingpin,0, [path] Set game directory, the folder with game executable.	
-	newcolum
-	switch_TEXT_BOX_,-chop,       -chop,       0,240,  # Subdivide size. Default: 240  Range: 32-1024
-	switch_TEXT_BOX_,-choplight,  -choplight,  0,240,  # Subdivide size for surface lights. Default: 240  Range: 32-1024
-	switch_CHECK_BOX,-largebounds,-largebounds,0,      Increase max map size for supporting engines.
-	switch_TEXT_BOX_,-micro,      -micro,      0,0.02, # Minimum microbrush size. Default: 0.02 Suggested range: 0.02 - 1.0
-	switch_CHECK_BOX,-nosubdiv,   -nosubdiv,   0,      Disable subdivision.
-	switch_CHECK_BOX,-qbsp,       -qbsp,       0,      Greatly expanded map and entity limits for supporting engines. 
-	newcolum
-	//bsp debugging options:
-	switch_TEXT_BOX_,-block,     -block,     0,1024 2048,           # # Division tree block size, square
-	switch_TEXT_BOX_,-blocks,    -blocks,    0,1024 1024 1024 1024, # # # # Div tree block size, rectangular
-	switch_TEXT_BOX_,-blocksize, -blocksize, 0,1024,                map cube size for processing. Default: 1024
+	switch_CHECK_BOX,-bsp,       -bsp,       2,           enable bsp pass, requires a .map file as input	
 	switch_CHECK_BOX,-fulldetail,-fulldetail,0, Change most brushes to detail.
 	switch_CHECK_BOX,-leaktest,  -leaktest,  0, Perform leak test only.
 	switch_CHECK_BOX,-nocsg,     -nocsg,     0, No constructive solid geometry.
@@ -89,49 +74,70 @@ TOOL2_BSP
 	switch_CHECK_BOX,-noprune,   -noprune,   0, Disable node pruning.
 	switch_CHECK_BOX,-noshare,   -noshare,   0, Don't look for shared edges on save.
 	switch_CHECK_BOX,-noskipfix, -noskipfix, 0, Do not automatically set skip contents to zero.
+	switch_CHECK_BOX,-nosubdiv,  -nosubdiv,  0, Disable subdivision.
 	switch_CHECK_BOX,-notjunc,   -notjunc,   0, Disable edge cleanup.
 	switch_CHECK_BOX,-nowater,   -nowater,   0, Ignore warp surfaces.
 	switch_CHECK_BOX,-noweld,    -noweld,    0, Disable vertex welding.
-	switch_CHECK_BOX,-onlyents, -onlyents,   0, Grab the entites and resave.
+	switch_CHECK_BOX,-onlyents,  -onlyents,  0, Grab the entites and resave.
+	switch_CHECK_BOX,-verbose,   -v,         0, Display extra compile info
+	newcolum
+	switch_CHECK_BOX,-largebounds,-largebounds,0,           Increase max map size for supporting engines.
+	switch_CHECK_BOX,-qbsp,       -qbsp,       0,           Greatly expanded map and entity limits for supporting engines. 
+	switch_TEXT_BOX_,-chop,       -chop,       1,400,       # Subdivide size. Default: 240  Range: 32-1024
+	switch_TEXT_BOX_,-choplight,  -choplight,  1,32,        # Subdivide size for surface lights. Default: 240  Range: 32-1024
+	switch_TEXT_BOX_,-micro,      -micro,      0,0.02,      # Minimum microbrush size. Default: 0.02 Suggested range: 0.02 - 1.0
+	switch_TEXT_BOX_,-block,      -block,      0,1024 2048,           # # Division tree block size, square
+	switch_TEXT_BOX_,-blocks,     -blocks,     0,1024 1024 1024 1024, # # # # Div tree block size, rectangular
+	switch_TEXT_BOX_,-blocksize,  -blocksize,  0,1024,                map cube size for processing. Default: 1024
+	//
+	switch_TEXT_BOX_,-threads,-threads,0,4,         limit number of CPU threads so other programs can function
+	switch_PATH_BASE,-basedir,-basedir,2,main,   0, [path] Set the directory for assets not in moddir. Default is moddir.
+	switch_PATH_MOD_,-moddir, -moddir, 1,comp,   0, [path] Set a mod directory. Default is parent dir of map file.
+	switch_PATH_EXE_,-gamedir,-gamedir,0,kingpin,0, [path] Set game directory, the folder with game executable.	
 }
 
 TOOL3_VIS
 {
 	switch_APPENDMAP,
-	switch_CHECK_BOX,-vis, -vis, 2, enable vis pass, requires a .bsp file as input or bsp pass enabled
-	switch_CHECK_BOX,-fast,-fast,0, fast single vis pass
+	switch_CHECK_BOX,-vis,    -vis,    2,enable vis pass, requires a .bsp file as input or bsp pass enabled
+	switch_CHECK_BOX,-fast,   -fast,   0,fast single vis pass
+	switch_CHECK_BOX,-verbose,-v,      0,Display extra compile info
+	newcolum	
+	switch_TEXT_BOX_,-threads,-threads,0,4,         limit number of CPU threads so other programs can function
+	switch_PATH_BASE,-basedir,-basedir,2,main,   0, [path] Set the directory for assets not in moddir. Default is moddir.
+	switch_PATH_MOD_,-moddir, -moddir, 1,comp,   0, [path] Set a mod directory. Default is parent dir of map file.
+	switch_PATH_EXE_,-gamedir,-gamedir,0,kingpin,0, [path] Set game directory, the folder with game executable.	
 }
 
 TOOL4_LIGHT
 {
 	switch_APPENDMAP,
-	switch_CHECK_BOX,-rad,    -rad,    2,           Enable rad pass,requires a .bsp file as input or bsp and vis passes enabled
-	switch_PATH_MOD_,-moddir, -moddir, 1,   comp,0, [path] Set a mod directory. Default is parent dir of map file.
-	switch_PATH_BASE,-basedir,-basedir,2,   main,0, [path] Set the directory for assets not in moddir. Default is moddir.
-	switch_PATH_EXE_,-gamedir,-gamedir,0,kingpin,0, [path] Set game directory, the folder with game executable.	
-	newcolum	
-	switch_TEXT_BOX_,-ambient,    -ambient,    0,20,      # Minimum light level.,range:  0 to 255.
-	switch_TEXT_BOX_,-bounce,     -bounce,     1,1,       # Max number of light bounces for radiosity.
-	switch_CHECK_BOX,-dice,       -dice,       0,         Subdivide patches with a global grid rather than per patch.
-	switch_TEXT_BOX_,-direct,     -direct,     0,1.0,     # Direct light scale factor.
-	switch_TEXT_BOX_,-entity,     -entity,     0,1.0,     # Entity light scale factor.
-	switch_CHECK_BOX,-extra,      -extra,      1,         Use extra samples to smooth lighting.
-	switch_TEXT_BOX_,-maxdata,    -maxdata,    0,2097152, # 2097152 is default max. Not needed for QBSP format.,Increase requires a supporting engine.
-	switch_TEXT_BOX_,-maxlight,   -maxlight,   0,190,     # Maximium light level.,range:  0 to 255.
-	switch_CHECK_BOX,-noedgefix,  -noedgefix,  0,         disable dark edges at sky fix. More of a hack, really.
-	switch_TEXT_BOX_,-nudge,      -nudge,      0,1.0,     # Nudge factor for samples. Distance fraction from center.
-	switch_TEXT_BOX_,-saturate,   -saturate,   0,1.0,     # Saturation factor of light bounced off surfaces.
-	switch_TEXT_BOX_,-scale,      -scale,      0,1.0,     # Light intensity multiplier.
-	switch_TEXT_BOX_,-smooth,     -smooth,     0,75,      # Threshold angle (# and 180deg - #) for phong smoothing.
-	switch_TEXT_BOX_,-subdiv,     -subdiv,     0,64,      # Maximum patch size.  Default: 64
-	switch_TEXT_BOX_,-sunradscale,-sunradscale,0,1.0,     # Sky light intensity scale when sun is active.
-	switch_TEXT_BOX_,-threads,    -threads,    0,4,       # Number of CPU cores to use.
-	newcolum	
-	//rad debugging options:
+	switch_CHECK_BOX,-rad,      -rad,      2, Enable rad pass,requires a .bsp file as input or bsp and vis passes enabled
+	switch_CHECK_BOX,-dice,     -dice,     0, Subdivide patches with a global grid rather than per patch.
 	switch_CHECK_BOX,-dump,     -dump,     0, Dump patches to a text file.
 	switch_CHECK_BOX,-noblock,  -noblock,  0, Brushes don't block lighting path.
+	switch_CHECK_BOX,-noedgefix,-noedgefix,0, disable dark edges at sky fix. More of a hack, really.
 	switch_CHECK_BOX,-nopvs,    -nopvs,    0, Don't do potential visibility set check.
-	switch_CHECK_BOX,-savetrace,-savetrace,0, Test traces and report errors.			
+	switch_CHECK_BOX,-savetrace,-savetrace,0, Test traces and report errors.
+	newcolum	
+	switch_CHECK_BOX,-extra,      -extra,      1,         Use extra samples to smooth lighting.
+	switch_TEXT_BOX_,-ambient,    -ambient,    1,20,      # Minimum light level.,range:  0 to 255.
+	switch_TEXT_BOX_,-bounce,     -bounce,     1,2,       # Max number of light bounces for radiosity.
+	switch_TEXT_BOX_,-direct,     -direct,     0,1.0,     # Direct light scale factor.
+	switch_TEXT_BOX_,-entity,     -entity,     0,1.0,     # Entity light scale factor.
+	switch_TEXT_BOX_,-maxdata,    -maxdata,    0,2097152, # 2097152 is default max. Not needed for QBSP format.,Increase requires a supporting engine.
+	switch_TEXT_BOX_,-maxlight,   -maxlight,   1,215,     # Maximium light level.,range:  0 to 255.
+	switch_TEXT_BOX_,-nudge,      -nudge,      0,1.0,     # Nudge factor for samples. Distance fraction from center.
+	switch_TEXT_BOX_,-saturate,   -saturation, 0,1.0,     # Saturation factor of light bounced off surfaces.
+	switch_TEXT_BOX_,-scale,      -scale,      1,2.0,     # Light intensity multiplier.
+	switch_TEXT_BOX_,-smooth,     -smooth,     1,35,      # Threshold angle (# and 180deg - #) for phong smoothing.
+	switch_TEXT_BOX_,-subdiv,     -subdiv,     0,64,      # Maximum patch size.  Default: 64
+	switch_TEXT_BOX_,-sunradscale,-sunradscale,0,1.0,     # Sky light intensity scale when sun is active.
+	//
+	switch_TEXT_BOX_,-threads,-threads,0,4,         # Number of CPU cores to use.	
+	switch_PATH_BASE,-basedir,-basedir,2,main,   0, [path] Set the directory for assets not in moddir. Default is moddir.
+	switch_PATH_MOD_,-moddir, -moddir, 1,comp,   0, [path] Set a mod directory. Default is parent dir of map file.
+	switch_PATH_EXE_,-gamedir,-gamedir,0,kingpin,0, [path] Set game directory, the folder with game executable.	
 }
 
 GAME
